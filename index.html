@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>StarCraft TMG - Master Army Forge & Reminders</title>
+  <style>
+    :root {
+      --bg-main: #090d16;
+      --bg-panel: #111724;
+      --bg-card: #192236;
+      --bg-card-hover: #24314c;
+      --border: #283650;
+      --border-accent: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-mineral: #38bdf8;
+      --accent-vespene: #4ade80;
+      --accent-supply: #c084fc;
+      --danger: #f87171;
+      --warning: #facc15;
+      --success: #34d399;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg-main); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Top Bar */
+    header {
+      background: var(--bg-panel);
+      border-bottom: 2px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      z-index: 20;
+    }
+    .brand { font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+    .brand span { color: var(--accent-mineral); }
+    .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between; }
+    @media (min-width: 901px) {
+      .controls { width: auto; justify-content: flex-end; }
+    }
+    select, button, input {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    button:hover { background: var(--bg-card-hover); }
+    .btn-primary { background: #0284c7; border: none; font-weight: 700; color: #fff; }
+    .btn-disabled { opacity: 0.45; cursor: not-allowed !important; background: #334155 !important; border-color: #475569 !important; }
+    
+    .resource-counter {
+      display: flex;
+      gap: 8px;
+      background: #060910;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 700;
+      width: 100%;
+      justify-content: space-around;
+    }
+    @media (min-width: 901px) {
+      .resource-counter { width: auto; gap: 14px; font-size: 0.85rem; }
+    }
+    .res-minerals { color: var(--accent-mineral); }
+    .res-vespene { color: var(--accent-vespene); }
+    .res-supply { color: var(--accent-supply); }
+
+    /* Toast Notification */
+    #toast-msg {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #dc2626;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+      border: 1px solid #f87171;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    /* Main Tab Bar */
+    .tab-bar {
+      display: flex;
+      background: #0c121e;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-muted);
+      padding: 12px 14px;
+      border-radius: 0;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .tab-btn.active { color: var(--accent-mineral); border-bottom-color: var(--accent-mineral); background: rgba(56, 189, 248, 0.05); }
+
+    /* Mobile Sub-Navigation Bar (Shown only on <= 900px) */
+    .mobile-subnav {
+      display: none;
+      background: #141c2c;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-subnav button {
+      flex: 1;
+      border-radius: 0;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 10px 4px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .mobile-subnav button.active {
+      color: var(--accent-mineral);
+      border-bottom-color: var(--accent-mineral);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    /* Robust Responsive Layout */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      flex-direction: column;
+    }
+    .panel { overflow-y: auto; padding: 12px; }
+
+    /* Desktop View Mode (> 900px): All 3 columns visible side-by-side ALWAYS */
+    @media (min-width: 901px) {
+      .workspace {
+        flex-direction: row !important;
+        height: calc(100vh - 110px) !important;
+      }
+      .mobile-subnav { display: none !important; }
+      
+      #panel-catalog {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 340px !important;
+        border-right: 1px solid var(--border) !important;
+        background: var(--bg-panel) !important;
+      }
+      #panel-roster {
+        display: block !important;
+        flex: 1 !important;
+        border-right: 1px solid var(--border) !important;
+        background: var(--bg-main) !important;
+      }
+      #panel-card {
+        display: block !important;
+        width: 440px !important;
+        background: var(--bg-panel) !important;
+      }
+    }
+
+    /* Mobile View Mode (<= 900px): Clean class-based toggling without inline display styling */
+    @media (max-width: 900px) {
+      .mobile-subnav { display: flex !important; }
+      
+      .workspace.view-catalog #panel-catalog { display: flex !important; flex-direction: column !important; width: 100% !important; }
+      .workspace.view-catalog #panel-roster  { display: none !important; }
+      .workspace.view-catalog #panel-card    { display: none !important; }
+
+      .workspace.view-roster #panel-catalog { display: none !important; }
+      .workspace.view-roster #panel-roster  { display: block !important; width: 100% !important; }
+      .workspace.view-roster #panel-card    { display: none !important; }
+
+      .workspace.view-card #panel-catalog { display: none !important; }
+      .workspace.view-card #panel-roster  { display: none !important; }
+      .workspace.view-card #panel-card    { display: block !important; width: 100% !important; }
+    }
+
+    h2, h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 8px; }
+
+    /* Legality Banner */
+    .legality-banner { background: #141d2f; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; border-left: 4px solid var(--success); }
+    .legality-banner.invalid { border-left-color: var(--danger); background: #26171a; }
+    .legality-title { font-weight: 800; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+    .legality-issues { margin-top: 6px; font-size: 0.75rem; color: #fca5a5; line-height: 1.35; }
+
+    /* Slots Dashboard */
+    .slots-dashboard { background: #080c14; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.72rem; }
+    .slot-pill { display: flex; gap: 3px; align-items: center; background: #131c2d; padding: 3px 6px; border-radius: 4px; }
+    .slot-pill span { font-weight: bold; color: var(--accent-mineral); }
+
+    /* Catalog Cards */
+    .catalog-list-container { overflow-y: auto; flex: 1; }
+    .catalog-item { background: var(--bg-card); border: 1px solid var(--border); padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .catalog-item.locked { opacity: 0.65; border-color: #2b3345; }
+    .req-warning { font-size: 0.7rem; color: #f87171; font-weight: 600; margin-top: 3px; }
+
+    .release-badge { display: inline-block; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; font-weight: 700; margin-left: 4px; text-transform: uppercase; }
+    .badge-wave1 { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; }
+    .badge-2026 { background: rgba(251, 146, 60, 0.2); color: #fb923c; border: 1px solid #fb923c; }
+
+    /* Roster Cards */
+    .roster-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    .roster-header { display: flex; justify-content: space-between; align-items: center; }
+    .unit-title { font-weight: 800; font-size: 0.95rem; cursor: pointer; }
+    .unit-title:hover { color: var(--accent-mineral); }
+    .upgrade-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; border-top: 1px solid #24314c; padding-top: 8px; }
+    .upgrade-option { display: flex; align-items: flex-start; gap: 8px; font-size: 0.8rem; color: #cbd5e1; cursor: pointer; }
+    .upgrade-option input { margin-top: 2px; min-width: 16px; min-height: 16px; }
+    .delete-btn { color: #f87171; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
+
+    /* Datasheet Card */
+    .datasheet { background: #090d16; border: 2px solid var(--border); border-radius: 8px; padding: 12px; }
+    .art-hologram { width: 100%; height: 120px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #2b3952; background: radial-gradient(circle, #17243c 0%, #060910 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .art-hologram svg { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6)); transform: scale(0.9); }
+    .holo-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-top: 4px; font-weight: bold; }
+
+    .sheet-title-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #24314c; padding-bottom: 6px; margin-bottom: 8px; }
+    .sheet-name { font-size: 1.15rem; font-weight: 900; }
+    .tags { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    
+    .stat-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; text-align: center; margin-bottom: 10px; }
+    .stat-box { background: #121927; padding: 5px 2px; border-radius: 5px; border: 1px solid #1c273e; }
+    .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .stat-val { font-size: 1rem; font-weight: 900; color: var(--accent-mineral); }
+
+    .sheet-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 0.75rem; }
+    .sheet-table th, .sheet-table td { padding: 5px 4px; text-align: left; }
+    .sheet-table th { background: #141b2c; color: var(--text-muted); font-size: 0.68rem; }
+    .sheet-table tr:nth-child(even) { background: #0d131f; }
+
+    .ability-block { font-size: 0.78rem; margin-top: 6px; background: #111724; padding: 7px 8px; border-radius: 4px; border-left: 3px solid var(--accent-mineral); }
+    .ability-block strong { color: #e2e8f0; }
+
+    /* Tactics & Draft Cards */
+    .tactics-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 700px) {
+      .tactics-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    }
+    .tactic-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+    .tactic-card.is-base { border-color: #38bdf8; background: #142035; }
+    .tactic-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+
+    .draft-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-bottom: 8px; cursor: pointer; }
+    .draft-card.selected { border-color: var(--accent-mineral); background: #142338; }
+
+    /* Phase Reminders */
+    .phase-container { display: flex; flex-direction: column; gap: 14px; max-width: 800px; margin: 0 auto; width: 100%; }
+    .phase-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+    .phase-card-header { font-size: 0.95rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-mineral); border-bottom: 2px solid #232f45; padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+    .phase-item { background: #111827; padding: 8px 10px; border-radius: 6px; border-left: 4px solid #38bdf8; margin-bottom: 8px; }
+    .phase-item strong { color: #f8fafc; font-size: 0.85rem; }
+    .phase-item span.source { color: var(--accent-vespene); font-size: 0.72rem; font-weight: bold; margin-left: 6px; text-transform: uppercase; }
+    .phase-item p { font-size: 0.8rem; color: #cbd5e1; margin-top: 4px; line-height: 1.35; }
+
+    /* Print Format */
+    @media print {
+      body { background: #fff !important; color: #000 !important; overflow: visible !important; height: auto !important; }
+      header, .tab-bar, .mobile-subnav, #panel-catalog, #panel-card, .controls, #toast-msg { display: none !important; }
+      #tab-reminders { display: block !important; padding: 0 !important; width: 100% !important; }
+      .phase-card { background: #fff !important; border: 1px solid #000 !important; page-break-inside: avoid; margin-bottom: 14px; }
+      .phase-card-header { color: #000 !important; border-bottom: 2px solid #000 !important; }
+      .phase-item { background: #f8fafc !important; border-left: 4px solid #000 !important; color: #000 !important; }
+      .phase-item strong, .phase-item p { color: #000 !important; }
+      .phase-item span.source { color: #444 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toast-msg">Action Blocked</div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">🚀 StarCraft <span>TMG Forge</span></div>
+    
+    <div class="resource-counter">
+      <div>M: <span id="total-minerals" class="res-minerals">0</span>/<span id="max-minerals">2000</span></div>
+      <div>V: <span id="total-vespene" class="res-vespene">0</span>/<span id="max-vespene">200</span></div>
+      <div>Sup: <span id="total-supply" class="res-supply">0</span></div>
+      <div><span id="faction-resource-name">CP</span>: <span id="total-faction-res" style="color:#fcd34d;">0</span></div>
+    </div>
+
+    <div class="controls">
+      <div style="display:flex; gap:6px; flex:1;">
+        <select id="faction-select" onchange="changeFaction(this.value)" style="flex:1;">
+          <option value="Terran">Terran</option>
+          <option value="Zerg">Zerg</option>
+          <option value="Protoss">Protoss</option>
+        </select>
+
+        <select id="game-size" onchange="changeGameSize(this.value)" style="flex:1;">
+          <option value="1000">1000 M</option>
+          <option value="2000" selected>2000 M</option>
+          <option value="3000">3000 M</option>
+        </select>
+      </div>
+
+      <div style="display:flex; gap:6px;">
+        <button class="btn-primary" onclick="window.print()">🖨️ Print</button>
+        <button onclick="clearAll()">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Navigation Tabs -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('units')">1. Units Roster</button>
+    <button class="tab-btn" onclick="switchTab('tactics')">2. Structures (<span id="tactic-count">1</span>)</button>
+    <button class="tab-btn" onclick="switchTab('missions')">3. Missions/Draft</button>
+    <button class="tab-btn" onclick="switchTab('reminders')">4. Phase Reminders</button>
+  </div>
+
+  <!-- Mobile Sub-Navigation Bar (Shown only on small screens) -->
+  <div class="mobile-subnav" id="mobile-subnav">
+    <button id="btn-subnav-catalog" class="active" onclick="switchMobileSubView('catalog')">1. Add Units</button>
+    <button id="btn-subnav-roster" onclick="switchMobileSubView('roster')">2. Army List (<span id="subnav-army-count">0</span>)</button>
+    <button id="btn-subnav-card" onclick="switchMobileSubView('card')">3. Stat Card</button>
+  </div>
+
+  <!-- Tab 1: Units Workspace (Defaults to view-catalog on mobile) -->
+  <div id="tab-units" class="workspace view-catalog">
+    <!-- Panel 1: Unit Selection Catalog -->
+    <div class="panel sidebar" id="panel-catalog">
+      <div style="margin-bottom: 8px;">
+        <select id="timeline-select" onchange="renderCatalog()" style="width:100%;">
+          <option value="all">Timeline: All Units</option>
+          <option value="wave1">Wave 1 Only (Founders)</option>
+          <option value="2026">2026 Releases (Wave 2-5)</option>
+        </select>
+      </div>
+      <h3>Unit Catalog</h3>
+      <div class="catalog-list-container" id="catalog-list"></div>
+    </div>
+
+    <!-- Panel 2: Live Army Roster & Validation -->
+    <div class="panel army-roster" id="panel-roster">
+      <div id="legality-banner" class="legality-banner">
+        <div class="legality-title">
+          <span id="legality-status-text">✓ BATTLEGROUP LEGAL</span>
+          <span id="legality-badge" style="font-size:0.65rem; padding:2px 6px; border-radius:4px; background:var(--success); color:#000;">VALID</span>
+        </div>
+        <div id="legality-issues" class="legality-issues"></div>
+      </div>
+
+      <div class="slots-dashboard" id="slots-dashboard"></div>
+
+      <h3>Current Battlegroup (<span id="army-count">0</span> Units)</h3>
+      <div id="roster-list"></div>
+    </div>
+
+    <!-- Panel 3: Active Datasheet Preview -->
+    <div class="panel card-preview" id="panel-card">
+      <h3>Active Datasheet</h3>
+      <div id="card-view">
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-top:15px;">Select any unit in the catalog or roster to view its complete stat card and abilities.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Tactical Cards -->
+  <div id="tab-tactics" class="workspace" style="display: none; padding: 12px; overflow-y:auto;">
+    <div style="margin-bottom:10px;">
+      <h3>Tactical Structures & Tech Tree</h3>
+      <p style="font-size:0.78rem; color:var(--text-muted);">
+        Paid with Vespene Gas (Max 10% of Minerals). Grants force slots and unlocks unit variants.
+      </p>
+    </div>
+    <div id="tactics-grid" class="tactics-grid"></div>
+  </div>
+
+  <!-- Tab 3: Deployment & Missions -->
+  <div id="tab-missions" class="workspace" style="display: none; padding: 12px; overflow-y:auto;">
+    <h3>Pre-Game Strategy Draft (Pick Exactly 2 of Each)</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+      <div style="flex: 1; min-width: 280px;">
+        <h4 style="color:var(--accent-mineral); margin-bottom: 8px; font-size:0.85rem;">DEPLOYMENT (<span id="dep-count">2</span> / 2 Selected)</h4>
+        <div id="deployment-list"></div>
+      </div>
+      <div style="flex: 1; min-width: 280px;">
+        <h4 style="color:var(--accent-vespene); margin-bottom: 8px; font-size:0.85rem;">MISSIONS (<span id="mis-count">2</span> / 2 Selected)</h4>
+        <div id="mission-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 4: Phase Reminders -->
+  <div id="tab-reminders" class="workspace" style="display: none; padding: 12px; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div>
+        <h3>Phase-by-Phase Turn Engine</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted);">Chronological sequence of actions for your chosen units.</p>
+      </div>
+      <button class="btn-primary" onclick="window.print()">🖨️ Print</button>
+    </div>
+    <div class="phase-container" id="phase-reminders-list"></div>
+  </div>
+
+  <script>
+    // --- VECTOR HOLOGRAMS ---
+    const ICONS = {
+      terran: `<svg width="60" height="60" viewBox="0 0 100 100" fill="none"><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" stroke="#38bdf8" stroke-width="4" fill="rgba(56,189,248,0.1)"/><path d="M50 20 L50 80 M30 35 L70 35 M25 65 L75 65" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="12" fill="#38bdf8"/></svg>`,
+      zerg: `<svg width="60" height="60" viewBox="0 0 100 100" fill="none"><path d="M50 10 C20 30 15 65 30 85 C45 100 55 100 70 85 C85 65 80 30 50 10 Z" stroke="#f87171" stroke-width="4" fill="rgba(248,113,113,0.1)"/><path d="M35 45 Q50 60 65 45 Q50 75 35 45 Z" fill="#f87171"/><circle cx="40" cy="35" r="4" fill="#f87171"/><circle cx="60" cy="35" r="4" fill="#f87171"/></svg>`,
+      protoss: `<svg width="60" height="60" viewBox="0 0 100 100" fill="none"><polygon points="50,5 85,50 50,95 15,50" stroke="#facc15" stroke-width="4" fill="rgba(250,204,21,0.1)"/><polygon points="50,25 70,50 50,75 30,50" stroke="#facc15" stroke-width="3" fill="#facc15"/><line x1="50" y1="5" x2="50" y2="95" stroke="#facc15" stroke-width="2"/></svg>`
+    };
+
+    // --- FACTION DATABASE ---
+    const DB = {
+      Terran: {
+        resName: "CP",
+        units: [
+          {
+            id: "t_raynor",
+            name: "Jim Raynor",
+            slotType: "Hero",
+            isHero: true,
+            reqStructure: "t_cc",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Hero Commander",
+            baseCost: 190,
+            baseSupply: 2,
+            models: 1,
+            speed: '6"',
+            armour: "4+",
+            health: 6,
+            shields: 0,
+            tags: "Ground, Biological, Hero, Commander",
+            weapons: [
+              { name: "Custom Gauss Rifle", rng: '16"', hit: "3+", roa: 5, surge: "Pierce (1)", dmg: 2 },
+              { name: "Breaching Frag", rng: '8"', hit: "4+", roa: 3, surge: "Blast (1)", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Inspiring Presence (Aura)", phase: "Macro / Round Start", desc: "Friendly units within 6\" reroll failed Morale tests and add +1 Hit roll." },
+              { name: "Penetrator Round (1 CP)", phase: "Assault Phase (Shooting)", desc: "Line attack: Target up to 2 models in direct file up to 18\" for 3 flat damage." }
+            ],
+            upgrades: [
+              { id: "combat_stims", name: "Combat Stims (+20 M)", cost: 20, desc: "+2\" Move speed.", phase: "Movement Phase" },
+              { id: "raider_grit", name: "Raider's Resolve (+25 M)", cost: 25, desc: "Gain Feel No Pain (5+).", phase: "Assault / Fight Phase" }
+            ]
+          },
+          {
+            id: "t_marine",
+            name: "Marine Squad",
+            slotType: "Core",
+            reqStructure: "t_cc",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Core Infantry",
+            baseCost: 160,
+            baseSupply: 1,
+            models: 6,
+            speed: '5"',
+            armour: "5+",
+            health: 1,
+            shields: 0,
+            tags: "Ground, Biological, Light",
+            weapons: [
+              { name: "C-14 Gauss Rifle", rng: '14"', hit: "4+", roa: 6, surge: "Light", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Stimpack (1 CP)", phase: "Assault Phase (Activation)", desc: "Take 3 non-lethal wounds. Add +2\" Move and convert 3 misses to hits." },
+              { name: "Take Cover (Reaction)", phase: "Assault Phase (Enemy Shooting)", desc: "When targeted in terrain cover, improve Armour save by +1." }
+            ],
+            upgrades: [
+              { 
+                id: "squad_12", 
+                name: "Full Squad (12 Marines) (+110 M, +1 Sup)", 
+                cost: 110, 
+                supplyBonus: 1, 
+                modelBonus: 6, 
+                weaponRoaBonus: 6, 
+                incompatibleWith: ["raynors_raiders"],
+                desc: "Doubles unit size to 12 models and doubles rate of attack." 
+              },
+              { 
+                id: "combat_shields", 
+                name: "Combat Shields (+30 M)", 
+                cost: 30, 
+                incompatibleWith: ["raynors_raiders"],
+                desc: "Each model gains +1 Health threshold (Health becomes 2)." 
+              },
+              { 
+                id: "spec_agg12", 
+                name: "Specialist: AGG-12 (+25 M)", 
+                cost: 25, 
+                incompatibleWith: ["raynors_raiders", "spec_rocket"],
+                desc: "[Specialist] 1 model equips an AGG-12 Grenade Launcher (12\" RNG, RoA 2, Blast 1). Incompatible with Rocket Launcher." 
+              },
+              { 
+                id: "spec_rocket", 
+                name: "Specialist: Rocket Launcher (+30 M)", 
+                cost: 30, 
+                incompatibleWith: ["raynors_raiders", "spec_agg12"],
+                desc: "[Specialist] 1 model equips a Rocket Launcher (20\" RNG, RoA 2, Air/Pierce 1). Incompatible with AGG-12." 
+              },
+              { 
+                id: "raynors_raiders", 
+                name: "Upgrade to Raynor's Raiders (+35 M)", 
+                cost: 35, 
+                incompatibleWith: ["combat_shields", "squad_12", "spec_agg12", "spec_rocket"],
+                isRaiderUpgrade: true,
+                desc: "Rebel Marine variant. Equips bayonets and frag grenades. Gains Slugthrower (Anti-Evade within 8\"), Raiders Roll! (-1 CP on stim upon entry), and Rapid Reinforcement. Barred from Shields, Heavy Weapons, or 12-man size." 
+              }
+            ]
+          },
+          {
+            id: "t_marauder",
+            name: "Marauder Squad",
+            slotType: "Heavy",
+            reqStructure: "t_barracks_tech",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Heavy Infantry",
+            baseCost: 150,
+            baseSupply: 1,
+            models: 2,
+            speed: '5"',
+            armour: "4+",
+            health: 3,
+            shields: 0,
+            tags: "Ground, Biological, Armoured",
+            weapons: [
+              { name: "Quad K12 Grenade Launcher", rng: '12"', hit: "4+", roa: 4, surge: "Armoured", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Concussive Shells", phase: "Assault Phase (Shooting)", desc: "Targets hit suffer -2\" Speed on their next activation." },
+              { name: "Stimpack (1 CP)", phase: "Assault Phase (Activation)", desc: "Take 2 wounds to gain +2\" Move and +2 Precision hits." }
+            ],
+            upgrades: [
+              { id: "reinforce_4", name: "Reinforce to 4 Marauders (+130 M, +1 Sup)", cost: 130, supplyBonus: 1, modelBonus: 2, weaponRoaBonus: 4, desc: "Increases squad to 4 models." },
+              { id: "kinetic_foam", name: "Kinetic Foam (+40 M)", cost: 40, desc: "Gain Tough (1) on the first armour save of each phase." }
+            ]
+          },
+          {
+            id: "t_goliath",
+            name: "Goliath Walker",
+            slotType: "Mech",
+            reqStructure: "t_factory",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Elite Mech",
+            baseCost: 190,
+            baseSupply: 2,
+            models: 1,
+            speed: '6"',
+            armour: "3+",
+            health: 6,
+            shields: 0,
+            tags: "Ground, Mechanical, Armoured",
+            weapons: [
+              { name: "Twin Autocannons", rng: '16"', hit: "4+", roa: 4, surge: "Light", dmg: 2 },
+              { name: "Hellfire AA Missiles", rng: '24"', hit: "3+", roa: 3, surge: "Air", dmg: 3 }
+            ],
+            abilities: [
+              { name: "Target Lock", phase: "Assault Phase (Shooting)", desc: "Reroll Hit results of 1 against selected target this phase." }
+            ],
+            upgrades: [
+              { id: "ares_targeting", name: "Ares Targeting (+20 M)", cost: 20, desc: "+4\" Range on Hellfire Missiles." }
+            ]
+          },
+          {
+            id: "t_medic",
+            name: "Medic Team",
+            slotType: "Support",
+            reqStructure: "t_barracks_tech",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Support",
+            baseCost: 110,
+            baseSupply: 1,
+            models: 3,
+            speed: '5"',
+            armour: "5+",
+            health: 2,
+            shields: 0,
+            tags: "Ground, Biological, Support",
+            weapons: [
+              { name: "Shock Taser", rng: 'Melee', hit: "5+", roa: 3, surge: "-", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Restoration Beam", phase: "Assault Phase (Support)", desc: "Restore up to 3 HP to an adjacent biological unit." },
+              { name: "Optical Flare", phase: "Assault Phase (Support)", desc: "Target enemy within 12\" loses line of sight beyond 6\"." }
+            ],
+            upgrades: []
+          },
+          {
+            id: "t_siege_tank",
+            name: "Crucio Siege Tank",
+            slotType: "Heavy",
+            reqStructure: "t_factory",
+            release: "2026",
+            timelineLabel: "2026 Wave 2",
+            type: "Artillery",
+            baseCost: 260,
+            baseSupply: 2,
+            models: 1,
+            speed: '5"',
+            armour: "3+",
+            health: 8,
+            shields: 0,
+            tags: "Ground, Mechanical, Armoured, Vehicle, 150mm Base",
+            weapons: [
+              { name: "Twin 90mm Cannons (Tank Mode)", rng: '16"', hit: "4+", roa: 4, surge: "Armoured", dmg: 3 },
+              { name: "120mm Shock Cannon (Siege Mode)", rng: '36"', hit: "3+", roa: 3, surge: "Blast (2) / Heavy", dmg: 5 }
+            ],
+            abilities: [
+              { name: "Siege Mode (Transform)", phase: "Assault Phase (Action)", desc: "Lock down into artillery mode: weapon increases to 36\" and Blast (2)." },
+              { name: "Spotter Coordination", phase: "Assault Phase (Shooting)", desc: "Can fire indirectly at targets seen by any friendly unit." }
+            ],
+            upgrades: [
+              { id: "shaped_blast", name: "Shaped Blast (+30 M)", cost: 30, desc: "Allies take 0 splash damage." }
+            ]
+          }
+        ],
+        tactics: [
+          { 
+            id: "t_cc", 
+            name: "Command Center (Faction Base)", 
+            isBase: true, 
+            vespene: 0, 
+            resVal: 1, 
+            grantedSlots: { Hero: 1, Core: 2 },
+            phase: "Macro / Round Start",
+            ability: "Base Logistics: Always included. Tap each round for 1 Command Point." 
+          },
+          { 
+            id: "t_barracks_std", 
+            name: "Barracks (Standard)", 
+            vespene: 30, 
+            resVal: 1, 
+            grantedSlots: { Core: 2 },
+            phase: "Pre-Game Mustering",
+            ability: "Muster Grunts: Grants +2 Core slots; reduce first reinforced squad cost by 20 minerals." 
+          },
+          { 
+            id: "t_barracks_tech", 
+            name: "Barracks (Tech Lab)", 
+            vespene: 40, 
+            resVal: 1, 
+            grantedSlots: { Heavy: 1, Support: 1 },
+            phase: "Assault Phase",
+            ability: "Tech Infusion: Unlocks Marauders and Medics; +1 Heavy & +1 Support slot." 
+          },
+          { 
+            id: "t_factory", 
+            name: "Factory Armory", 
+            vespene: 50, 
+            resVal: 2, 
+            grantedSlots: { Mech: 1, Heavy: 1 },
+            phase: "Movement Phase",
+            ability: "Overclock Engines: Mech units gain +3\" Speed during their move activation." 
+          },
+          { 
+            id: "t_orbital", 
+            name: "Orbital Command Station", 
+            vespene: 60, 
+            resVal: 2, 
+            grantedSlots: { Hero: 1, Support: 1 },
+            phase: "Macro / Round Start",
+            ability: "Scanner Sweep: Reveal all Burrowed/Stealth units across the board for the round." 
+          }
+        ]
+      },
+      Zerg: {
+        resName: "BM",
+        units: [
+          {
+            id: "z_kerrigan",
+            name: "Sarah Kerrigan",
+            slotType: "Hero",
+            isHero: true,
+            reqStructure: "z_hatchery",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Hero Commander",
+            baseCost: 220,
+            baseSupply: 2,
+            models: 1,
+            speed: '8"',
+            armour: "4+",
+            health: 7,
+            shields: 0,
+            tags: "Ground, Biological, Psionic, Hero, Commander",
+            weapons: [
+              { name: "Primal Bone Claws", rng: 'Melee', hit: "2+", roa: 6, surge: "Pierce (2)", dmg: 3 },
+              { name: "Psionic Shift", rng: '10"', hit: "3+", roa: 4, surge: "Blast (1)", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Leaping Strike", phase: "Assault Phase (Charge)", desc: "Leap directly into close combat from up to 8\" away without terrain penalty." },
+              { name: "Spawn Broodlings", phase: "Fight Phase", desc: "Place a free Zergling model within 2\" whenever Kerrigan destroys an enemy model." }
+            ],
+            upgrades: [
+              { id: "kinetic_blast", name: "Kinetic Blast (+30 M)", cost: 30, desc: "+2 Damage vs Armoured with Psionic Shift." }
+            ]
+          },
+          {
+            id: "z_zergling",
+            name: "Zergling Brood",
+            slotType: "Core",
+            reqStructure: "z_spawning_pool",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Core Swarm",
+            baseCost: 180,
+            baseSupply: 1,
+            models: 12,
+            speed: '8"',
+            armour: "6+",
+            health: 1,
+            shields: 0,
+            tags: "Ground, Biological, Light",
+            weapons: [
+              { name: "Serrated Claws", rng: 'Melee', hit: "4+", roa: 12, surge: "Light", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Metabolic Surge (1 BM)", phase: "Assault Phase (Charge)", desc: "Roll 2D6 pick highest for charge distance." },
+              { name: "Swarm Overwhelm", phase: "Fight Phase", desc: "+1 RoA per model if the brood outnumbers the enemy." }
+            ],
+            upgrades: [
+              { 
+                id: "squad_24_zerg", 
+                name: "Full Swarm (24 Zerglings) (+120 M, +1 Sup)", 
+                cost: 120, 
+                supplyBonus: 1, 
+                modelBonus: 12, 
+                weaponRoaBonus: 12, 
+                desc: "Expands brood to 24 models and 24 melee attacks." 
+              },
+              { 
+                id: "raptor_strain", 
+                name: "Strain: Raptor Brood (+40 M)", 
+                cost: 40, 
+                incompatibleWith: ["shredding_claws"],
+                desc: "[Strain] Gains Cliff Jumper (ignores terrain elevation) and Impact (1) on 5+ charges. Incompatible with Shredding Claws." 
+              },
+              { 
+                id: "shredding_claws", 
+                name: "Carapace: Shredding Claws (+25 M)", 
+                cost: 25, 
+                incompatibleWith: ["raptor_strain"],
+                desc: "[Strain] Claws gain Pierce (1) against Armoured. Incompatible with Raptor Brood." 
+              },
+              { 
+                id: "burrow", 
+                name: "Burrow (+20 M)", 
+                cost: 20, 
+                desc: "Can Burrow to gain Stealth and Evade (4+)." 
+              }
+            ]
+          },
+          {
+            id: "z_roach",
+            name: "Roach Pack",
+            slotType: "Heavy",
+            reqStructure: "z_roach_warren",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Assault Beast",
+            baseCost: 170,
+            baseSupply: 1,
+            models: 3,
+            speed: '5"',
+            armour: "4+",
+            health: 3,
+            shields: 0,
+            tags: "Ground, Biological, Armoured",
+            weapons: [
+              { name: "Acid Saliva", rng: '10"', hit: "4+", roa: 6, surge: "Armoured", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Rapid Regeneration", phase: "Round Start / End Phase", desc: "Heal 2 damage each activation if Burrowed or on Creep." },
+              { name: "Burrow Ambush", phase: "Movement Phase (Reserves)", desc: "Deploy anywhere on the table outside 10\" of enemies." }
+            ],
+            upgrades: [
+              { id: "roach_6", name: "Double Pack (6 Roaches) (+140 M, +1 Sup)", cost: 140, supplyBonus: 1, modelBonus: 3, weaponRoaBonus: 6, desc: "Increases pack to 6 models." },
+              { 
+                id: "corpser_strain", 
+                name: "Strain: Corpser Strains (+35 M)", 
+                cost: 35, 
+                incompatibleWith: ["hydriodic_bile"],
+                desc: "Destroyed targets spawn 2 allied Roachlings. Incompatible with Hydriodic Bile." 
+              },
+              { 
+                id: "hydriodic_bile", 
+                name: "Offensive: Hydriodic Bile (+30 M)", 
+                cost: 30, 
+                incompatibleWith: ["corpser_strain"],
+                desc: "Acid Saliva gains Light Surge and D3+1 damage. Incompatible with Corpser Strain." 
+              },
+              { id: "tunneling", name: "Tunneling Claws (+35 M)", cost: 35, desc: "Move full speed while Burrowed." }
+            ]
+          },
+          {
+            id: "z_hydra",
+            name: "Hydralisk Den-Guard",
+            slotType: "Core",
+            reqStructure: "z_hydra_den",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Ranged Hunter",
+            baseCost: 140,
+            baseSupply: 1,
+            models: 2,
+            speed: '6"',
+            armour: "5+",
+            health: 3,
+            shields: 0,
+            tags: "Ground, Biological",
+            weapons: [
+              { name: "Needle Spines", rng: '16"', hit: "3+", roa: 6, surge: "Light / Air", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Grooved Spines", phase: "Assault Phase (Shooting)", desc: "Ignores target cover bonuses at ranges under 10\"." }
+            ],
+            upgrades: [
+              { id: "reinforce_hydra_4", name: "Reinforce to 4 Hydras (+120 M, +1 Sup)", cost: 120, supplyBonus: 1, modelBonus: 2, weaponRoaBonus: 6, desc: "Reinforce unit to 4 models." }
+            ]
+          }
+        ],
+        tactics: [
+          { 
+            id: "z_hatchery", 
+            name: "Hatchery (Faction Hive)", 
+            isBase: true, 
+            vespene: 0, 
+            resVal: 1, 
+            grantedSlots: { Hero: 1, Core: 1 },
+            phase: "Macro / Round Start",
+            ability: "Spawn Larvae: Always included. Tap each round for 1 Biomass or produce a free deployment token." 
+          },
+          { 
+            id: "z_spawning_pool", 
+            name: "Spawning Pool", 
+            vespene: 30, 
+            resVal: 1, 
+            grantedSlots: { Core: 3 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Zergling Broods; provides +3 Core Swarm slots." 
+          },
+          { 
+            id: "z_roach_warren", 
+            name: "Roach Warren", 
+            vespene: 35, 
+            resVal: 1, 
+            grantedSlots: { Heavy: 2 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Roaches; provides +2 Heavy slots." 
+          },
+          { 
+            id: "z_hydra_den", 
+            name: "Hydralisk Den", 
+            vespene: 45, 
+            resVal: 1, 
+            grantedSlots: { Core: 2, Support: 1 },
+            phase: "Assault Phase (Shooting)",
+            ability: "Unlocks Hydralisks; provides +2 Core and +1 Support slot. Hydras gain +2\" range on Creep." 
+          }
+        ]
+      },
+      Protoss: {
+        resName: "PE",
+        units: [
+          {
+            id: "p_artanis",
+            name: "Hierarch Artanis",
+            slotType: "Hero",
+            isHero: true,
+            reqStructure: "p_nexus",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Hero Commander",
+            baseCost: 230,
+            baseSupply: 2,
+            models: 1,
+            speed: '6"',
+            armour: "3+",
+            health: 6,
+            shields: 6,
+            tags: "Ground, Biological, Psionic, Hero, Commander",
+            weapons: [
+              { name: "Twin Psi-Blades", rng: 'Melee', hit: "2+", roa: 7, surge: "Pierce (2)", dmg: 3 },
+              { name: "Lightning Dash", rng: '8"', hit: "3+", roa: 4, surge: "Light", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Shield Overcharge", phase: "Macro / Round Start", desc: "Friendly Protoss within 8\" immediately restore 2 Shields." },
+              { name: "Guardian Shell", phase: "Any Phase (Reaction)", desc: "First friendly model to take fatal damage survives with 1 HP." }
+            ],
+            upgrades: [
+              { id: "solarite", name: "Solarite Core (+30 M)", cost: 30, desc: "+2 Shields." }
+            ]
+          },
+          {
+            id: "p_zealot",
+            name: "Zealot Phalanx",
+            slotType: "Core",
+            reqStructure: "p_gateway",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Core Melee",
+            baseCost: 160,
+            baseSupply: 2,
+            models: 3,
+            speed: '6"',
+            armour: "4+",
+            health: 3,
+            shields: 3,
+            tags: "Ground, Biological, Psionic",
+            weapons: [
+              { name: "Psi-Blades", rng: 'Melee', hit: "3+", roa: 8, surge: "Light", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Zealous Charge (1 PE)", phase: "Assault Phase (Charge)", desc: "Add flat +3\" to charge movement without rolling dice." },
+              { name: "Plasma Shield", phase: "Assault / Fight Phase", desc: "Damage must exhaust shields prior to rolling armour saves." }
+            ],
+            upgrades: [
+              { 
+                id: "zealot_6", 
+                name: "Full Phalanx (6 Zealots) (+140 M, +1 Sup)", 
+                cost: 140, 
+                supplyBonus: 1, 
+                modelBonus: 3, 
+                weaponRoaBonus: 8, 
+                desc: "Expands squad to 6 models." 
+              },
+              { 
+                id: "praetor_guard", 
+                name: "Upgrade to Praetor Guard (+35 M)", 
+                cost: 35, 
+                incompatibleWith: ["shield_capacitor"],
+                desc: "Veterans gain Pierce (1) on Psi-Blades and +2 attacks. Incompatible with Shield Capacitors." 
+              },
+              { 
+                id: "shield_capacitor", 
+                name: "Shield Capacitors (+30 M)", 
+                cost: 30, 
+                incompatibleWith: ["praetor_guard"],
+                desc: "Adds +2 Shields to the unit. Incompatible with Praetor Guard." 
+              }
+            ]
+          },
+          {
+            id: "p_adept",
+            name: "Adept Cadre",
+            slotType: "Core",
+            reqStructure: "p_gateway",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Ranged Infantry",
+            baseCost: 150,
+            baseSupply: 1,
+            models: 4,
+            speed: '6"',
+            armour: "4+",
+            health: 3,
+            shields: 2,
+            tags: "Ground, Biological, Light, Psionic",
+            weapons: [
+              { name: "Glaive Cannon", rng: '14"', hit: "4+", roa: 6, surge: "Light", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Psionic Transfer (1 PE)", phase: "Movement Phase", desc: "Send shade; Adept squad teleports to shade location at end of phase." }
+            ],
+            upgrades: [
+              { 
+                id: "resonating", 
+                name: "Resonating Glaives (+35 M)", 
+                cost: 35, 
+                incompatibleWith: ["phase_bulwark"],
+                desc: "Hits on 3+ against Light targets. Incompatible with Phase Bulwark." 
+              },
+              { 
+                id: "phase_bulwark", 
+                name: "Phase Bulwark (+30 M)", 
+                cost: 30, 
+                incompatibleWith: ["resonating"],
+                desc: "Gain +2 Shields while projecting a shade. Incompatible with Resonating Glaives." 
+              }
+            ]
+          },
+          {
+            id: "p_stalker",
+            name: "Stalker Stryker",
+            slotType: "Mech",
+            reqStructure: "p_cyber_core",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Cybernetic Walker",
+            baseCost: 170,
+            baseSupply: 1,
+            models: 1,
+            speed: '7"',
+            armour: "3+",
+            health: 5,
+            shields: 3,
+            tags: "Ground, Mechanical, Armoured, Psionic",
+            weapons: [
+              { name: "Particle Disruptor", rng: '18"', hit: "3+", roa: 3, surge: "Armoured / Air", dmg: 3 }
+            ],
+            abilities: [
+              { name: "Blink (1 PE)", phase: "Movement Phase", desc: "Instantly teleport up to 6\" ignoring terrain and models." }
+            ],
+            upgrades: [
+              { id: "stalker_pair", name: "Reinforce to 2 Stalkers (+100 M, +1 Sup)", cost: 100, supplyBonus: 1, modelBonus: 1, weaponRoaBonus: 3 }
+            ]
+          }
+        ],
+        tactics: [
+          { 
+            id: "p_nexus", 
+            name: "Nexus (Faction Core)", 
+            isBase: true, 
+            vespene: 0, 
+            resVal: 1, 
+            grantedSlots: { Hero: 1, Core: 1 },
+            phase: "Macro / Round Start",
+            ability: "Always included. Tap each round for 1 Psionic Energy or recharge 2 shields on a nearby ally." 
+          },
+          { 
+            id: "p_gateway", 
+            name: "Gateway (Standard)", 
+            vespene: 30, 
+            resVal: 1, 
+            grantedSlots: { Core: 2 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Zealots and Adepts; provides +2 Core slots." 
+          },
+          { 
+            id: "p_cyber_core", 
+            name: "Cybernetics Core", 
+            vespene: 45, 
+            resVal: 2, 
+            grantedSlots: { Mech: 1, Support: 1 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Stalkers; provides +1 Mech & +1 Support slot." 
+          }
+        ]
+      }
+    };
+
+    // Pre-Game Cards
+    const DEPLOYMENT_STYLES = [
+      { id: "dep_edge", name: "Standard Entry Edge", phase: "Deployment Phase", desc: "Forces enter base-first from respective long table edges on turn 1." },
+      { id: "dep_corner", name: "Corner Vanguard", phase: "Deployment Phase", desc: "Forces deploy from opposite diagonal 18\" corners." },
+      { id: "dep_flank", name: "Flank Infiltration (Pincer)", phase: "Deployment Phase", desc: "Battlegroups split between left and right flanks." },
+      { id: "dep_scout", name: "Forward Infiltration (12\" Scout)", phase: "Deployment Phase", desc: "Core units can deploy up to 12\" forward onto the board." },
+      { id: "dep_drop", name: "Tactical Aerial Drop", phase: "Deployment Phase", desc: "One unit arrives on an airdrop beacon placed anywhere outside 10\" of enemies." },
+      { id: "dep_escalation", name: "Deep Reserves (Escalation)", phase: "Deployment Phase", desc: "Starts at 4 supply round 1, escalating by +3 supply each round." }
+    ];
+
+    const MISSION_OBJECTIVES = [
+      { id: "mis_minerals", name: "Mineral Field Control", phase: "End / Scoring Phase", desc: "Secure 3 contested mineral nodes. Yields 1 VP per node each round." },
+      { id: "mis_koth", name: "King of the Hill (Watchtower)", phase: "End / Scoring Phase", desc: "Control the central Watchtower for bonus vision and 2 VP per round." },
+      { id: "mis_extraction", name: "Critical Extraction", phase: "End / Scoring Phase", desc: "Extract data cores across the board for 3 VP each." },
+      { id: "mis_assassinate", name: "Commander Elimination", phase: "Fight Phase", desc: "Destroy enemy Heroes and Heavy War Engines for bonus bounties." },
+      { id: "mis_cache", name: "Supply Depot Raid", phase: "End / Scoring Phase", desc: "Infiltrate opponent rear territory to destroy supply caches." },
+      { id: "mis_territory", name: "Territory Domination", phase: "End / Scoring Phase", desc: "Control more quadrants than the opponent to score 2 VP." }
+    ];
+
+    // --- APPLICATION STATE ---
+    let currentFaction = "Terran";
+    let gameSizeMinerals = 2000;
+    let army = [];
+    let selectedTactics = [];
+    let selectedDeployments = ["dep_edge", "dep_drop"];
+    let selectedMissions = ["mis_minerals", "mis_koth"];
+    let customArtOverride = {};
+    let nextUid = 1;
+    let activeMobileSubView = "catalog"; // Default to catalog on mobile so units are visible immediately
+
+    function init() {
+      autoSelectBaseStructure();
+      renderAll();
+      renderDatasheet(DB[currentFaction].units[0]);
+    }
+
+    // Class-based view switcher that NEVER mutates inline display properties
+    function switchMobileSubView(view) {
+      activeMobileSubView = view;
+      const workspace = document.getElementById("tab-units");
+      if (workspace) {
+        workspace.className = "workspace view-" + view;
+      }
+      const subnavBtns = document.querySelectorAll(".mobile-subnav button");
+      subnavBtns.forEach(btn => btn.classList.remove("active"));
+      if (view === "catalog") document.getElementById("btn-subnav-catalog")?.classList.add("active");
+      if (view === "roster") document.getElementById("btn-subnav-roster")?.classList.add("active");
+      if (view === "card") document.getElementById("btn-subnav-card")?.classList.add("active");
+    }
+
+    function autoSelectBaseStructure() {
+      const baseCard = DB[currentFaction].tactics.find(t => t.isBase);
+      if (baseCard && !selectedTactics.includes(baseCard.id)) {
+        selectedTactics = [baseCard.id];
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-bar .tab-btn").forEach(btn => btn.classList.remove("active"));
+      event.target.classList.add("active");
+
+      document.getElementById("tab-units").style.display = tabId === "units" ? "flex" : "none";
+      document.getElementById("tab-tactics").style.display = tabId === "tactics" ? "flex" : "none";
+      document.getElementById("tab-missions").style.display = tabId === "missions" ? "flex" : "none";
+      document.getElementById("tab-reminders").style.display = tabId === "reminders" ? "flex" : "none";
+
+      const subnav = document.getElementById("mobile-subnav");
+      if (subnav) subnav.style.display = (tabId === "units" && window.innerWidth <= 900) ? "flex" : "none";
+
+      if (tabId === "reminders") renderPhaseReminders();
+    }
+
+    function changeFaction(fac) {
+      currentFaction = fac;
+      army = [];
+      selectedTactics = [];
+      autoSelectBaseStructure();
+      document.getElementById("faction-resource-name").innerText = DB[fac].resName;
+      renderAll();
+      renderDatasheet(DB[currentFaction].units[0]);
+    }
+
+    function changeGameSize(val) {
+      gameSizeMinerals = parseInt(val);
+      document.getElementById("max-minerals").innerText = gameSizeMinerals;
+      document.getElementById("max-vespene").innerText = gameSizeMinerals * 0.1;
+      renderAll();
+    }
+
+    function triggerToast(text) {
+      const toast = document.getElementById("toast-msg");
+      toast.innerText = text;
+      toast.style.display = "block";
+      setTimeout(() => { toast.style.display = "none"; }, 3400);
+    }
+
+    // --- RULES ENGINE ---
+    function evaluateArmyRules() {
+      const issues = [];
+      let totalM = 0;
+      let totalV = 0;
+      let totalS = 0;
+      let totalFactionRes = 0;
+      let heroCount = 0;
+
+      const capacity = { Hero: 0, Core: 0, Heavy: 0, Mech: 0, Air: 0, Support: 0 };
+      const usedSlots = { Hero: 0, Core: 0, Heavy: 0, Mech: 0, Air: 0, Support: 0 };
+
+      selectedTactics.forEach(tId => {
+        const tac = DB[currentFaction].tactics.find(t => t.id === tId);
+        if (tac) {
+          totalV += tac.vespene;
+          totalFactionRes += tac.resVal;
+          if (tac.grantedSlots) {
+            for (const [k, v] of Object.entries(tac.grantedSlots)) {
+              if (capacity[k] !== undefined) capacity[k] += v;
+            }
+          }
+        }
+      });
+
+      army.forEach(entry => {
+        const base = DB[currentFaction].units.find(u => u.id === entry.baseId);
+        let cost = base.baseCost;
+        let s = base.baseSupply;
+
+        if (base.isHero) heroCount++;
+
+        base.upgrades.forEach(upg => {
+          if (entry.selectedUpgrades.includes(upg.id)) {
+            cost += upg.cost;
+            if (upg.supplyBonus) s += upg.supplyBonus;
+          }
+        });
+
+        totalM += cost;
+        totalS += s;
+
+        if (usedSlots[base.slotType] !== undefined) {
+          usedSlots[base.slotType]++;
+        }
+
+        if (base.reqStructure && !selectedTactics.includes(base.reqStructure)) {
+          const reqTac = DB[currentFaction].tactics.find(t => t.id === base.reqStructure);
+          const reqName = reqTac ? reqTac.name : base.reqStructure;
+          issues.push(`"${base.name}" requires structure "${reqName}".`);
+        }
+      });
+
+      for (const [type, count] of Object.entries(usedSlots)) {
+        if (count > capacity[type]) {
+          issues.push(`Over ${type} Capacity: Using ${count}/${capacity[type]} slots.`);
+        }
+      }
+
+      if (heroCount > 1) issues.push(`Maximum 1 Hero allowed (found ${heroCount}).`);
+      if (totalM > gameSizeMinerals) issues.push(`Over Minerals: ${totalM}/${gameSizeMinerals}.`);
+      const maxVespene = gameSizeMinerals * 0.1;
+      if (totalV > maxVespene) issues.push(`Over Vespene: ${totalV}/${maxVespene}.`);
+      if (selectedDeployments.length !== 2) issues.push(`Select exactly 2 Deployment Cards.`);
+      if (selectedMissions.length !== 2) issues.push(`Select exactly 2 Mission Cards.`);
+
+      return {
+        isValid: issues.length === 0,
+        issues,
+        totalM,
+        totalV,
+        totalS,
+        totalFactionRes,
+        capacity,
+        usedSlots,
+        heroCount
+      };
+    }
+
+    function canAddUnit(unit) {
+      const state = evaluateArmyRules();
+
+      if (state.totalM + unit.baseCost > gameSizeMinerals) {
+        return { allowed: false, reason: `Exceeds ${gameSizeMinerals} Mineral limit.` };
+      }
+
+      if (unit.isHero && state.heroCount >= 1) {
+        return { allowed: false, reason: `Army already fields 1 Hero Commander.` };
+      }
+
+      if (unit.reqStructure && !selectedTactics.includes(unit.reqStructure)) {
+        const reqTac = DB[currentFaction].tactics.find(t => t.id === unit.reqStructure);
+        return { allowed: false, reason: `Requires "${reqTac ? reqTac.name : 'structure'}" card.` };
+      }
+
+      const currentUsed = state.usedSlots[unit.slotType] || 0;
+      const maxAvail = state.capacity[unit.slotType] || 0;
+      if (currentUsed >= maxAvail) {
+        return { allowed: false, reason: `No ${unit.slotType} slots left (${currentUsed}/${maxAvail}).` };
+      }
+
+      return { allowed: true };
+    }
+
+    // --- MUSTERING LOGIC ---
+    function addUnit(unitId, event) {
+      if (event) event.stopPropagation();
+      const base = DB[currentFaction].units.find(u => u.id === unitId);
+      if (!base) return;
+
+      const check = canAddUnit(base);
+      if (!check.allowed) {
+        triggerToast(check.reason);
+        return;
+      }
+
+      army.push({
+        uid: nextUid++,
+        baseId: base.id,
+        selectedUpgrades: []
+      });
+      renderAll();
+      renderDatasheet(base);
+      triggerToast(`Added ${base.name} to Battlegroup!`);
+    }
+
+    function removeUnit(uid) {
+      army = army.filter(u => u.uid !== uid);
+      renderAll();
+    }
+
+    function toggleUpgrade(uid, upgId) {
+      const item = army.find(u => u.uid === uid);
+      if (!item) return;
+
+      const base = DB[currentFaction].units.find(u => u.id === item.baseId);
+      const targetUpg = base.upgrades.find(u => u.id === upgId);
+
+      if (item.selectedUpgrades.includes(upgId)) {
+        item.selectedUpgrades = item.selectedUpgrades.filter(id => id !== upgId);
+      } else {
+        if (targetUpg && targetUpg.incompatibleWith) {
+          targetUpg.incompatibleWith.forEach(incId => {
+            if (item.selectedUpgrades.includes(incId)) {
+              item.selectedUpgrades = item.selectedUpgrades.filter(id => id !== incId);
+              const removedUpg = base.upgrades.find(u => u.id === incId);
+              triggerToast(`Disabled "${removedUpg.name}" to equip "${targetUpg.name}".`);
+            }
+          });
+        }
+        item.selectedUpgrades.push(upgId);
+      }
+      renderAll();
+    }
+
+    function toggleTactic(tId) {
+      const tac = DB[currentFaction].tactics.find(t => t.id === tId);
+      if (tac.isBase) return;
+
+      if (selectedTactics.includes(tId)) {
+        selectedTactics = selectedTactics.filter(id => id !== tId);
+      } else {
+        let testV = tac.vespene;
+        selectedTactics.forEach(id => {
+          const item = DB[currentFaction].tactics.find(t => t.id === id);
+          if (item) testV += item.vespene;
+        });
+        if (testV > gameSizeMinerals * 0.1) {
+          triggerToast(`Exceeds max of ${gameSizeMinerals * 0.1} Vespene Gas.`);
+          return;
+        }
+        selectedTactics.push(tId);
+      }
+      renderAll();
+    }
+
+    function toggleDep(id) {
+      if (selectedDeployments.includes(id)) {
+        selectedDeployments = selectedDeployments.filter(x => x !== id);
+      } else {
+        if (selectedDeployments.length >= 2) {
+          triggerToast("You may only select 2 Deployment Cards.");
+          return;
+        }
+        selectedDeployments.push(id);
+      }
+      renderAll();
+    }
+
+    function toggleMis(id) {
+      if (selectedMissions.includes(id)) {
+        selectedMissions = selectedMissions.filter(x => x !== id);
+      } else {
+        if (selectedMissions.length >= 2) {
+          triggerToast("You may only select 2 Mission Cards.");
+          return;
+        }
+        selectedMissions.push(id);
+      }
+      renderAll();
+    }
+
+    function clearAll() {
+      army = [];
+      selectedTactics = [];
+      autoSelectBaseStructure();
+      renderAll();
+    }
+
+    // --- PHASE REMINDERS ENGINE ---
+    function renderPhaseReminders() {
+      const container = document.getElementById("phase-reminders-list");
+      container.innerHTML = "";
+
+      const phases = [
+        { id: "pre_game", name: "Before the Battle & Deployment" },
+        { id: "macro", name: "Macro Phase & Round Start" },
+        { id: "move", name: "Movement Phase" },
+        { id: "assault", name: "Assault Phase (Shooting & Charges)" },
+        { id: "fight", name: "Fight Phase (Melee Combat)" },
+        { id: "end", name: "End of Turn & Scoring Phase" }
+      ];
+
+      const phaseItems = { pre_game: [], macro: [], move: [], assault: [], fight: [], end: [] };
+
+      phaseItems.pre_game.push({
+        title: "2D6 Strategy Roll-Off & Veto Draft",
+        source: "Core Rules",
+        desc: "Roll 2D6 to determine priority. Players alternate banning 1 deployment and 1 mission card."
+      });
+
+      selectedDeployments.forEach(dId => {
+        const d = DEPLOYMENT_STYLES.find(x => x.id === dId);
+        if (d) phaseItems.pre_game.push({ title: d.name, source: "Deployment Card", desc: d.desc });
+      });
+
+      selectedMissions.forEach(mId => {
+        const m = MISSION_OBJECTIVES.find(x => x.id === mId);
+        if (m) phaseItems.end.push({ title: m.name, source: "Mission Objective", desc: m.desc });
+      });
+
+      selectedTactics.forEach(tId => {
+        const tac = DB[currentFaction].tactics.find(t => t.id === tId);
+        if (tac && tac.ability) phaseItems.macro.push({ title: tac.name, source: "Structure", desc: tac.ability });
+      });
+
+      army.forEach(entry => {
+        const unit = DB[currentFaction].units.find(u => u.id === entry.baseId);
+        const hasRaiders = entry.selectedUpgrades.includes("raynors_raiders");
+        const hasRaptor = entry.selectedUpgrades.includes("raptor_strain");
+
+        unit.abilities.forEach(ab => {
+          let targetPhase = "assault";
+          const p = (ab.phase || "").toLowerCase();
+          if (p.includes("macro") || p.includes("round start")) targetPhase = "macro";
+          else if (p.includes("move")) targetPhase = "move";
+          else if (p.includes("fight")) targetPhase = "fight";
+          else if (p.includes("end")) targetPhase = "end";
+
+          phaseItems[targetPhase].push({
+            title: `${ab.name} (${unit.name})`,
+            source: unit.type,
+            desc: ab.desc
+          });
+        });
+
+        if (hasRaiders) {
+          phaseItems.move.push({
+            title: `Rapid Reinforcement (Raynor's Raiders)`,
+            source: "Variant",
+            desc: "When deploying from Reserves, can arrive within 10\" of an ally outside 8\" of enemies."
+          });
+          phaseItems.assault.push({
+            title: `Raiders Roll! & Slugthrower (Raynor's Raiders)`,
+            source: "Variant",
+            desc: "Stimpack CP cost reduced by 1 when entering from reserves. Gains Anti-Evade (1) and D6 Surge on C-14 within 8\"."
+          });
+        }
+
+        if (hasRaptor) {
+          phaseItems.move.push({
+            title: `Cliff Jumper (Kerrigan's Raptors)`,
+            source: "Variant",
+            desc: "Can leap freely over terrain elevation barriers up to 3\" height without deducting movement."
+          });
+          phaseItems.assault.push({
+            title: `Impact Charge (Kerrigan's Raptors)`,
+            source: "Variant",
+            desc: "Upon finishing a charge, roll a D6 for each model; on 5+ deal 1 mortal wound."
+          });
+        }
+      });
+
+      phases.forEach(ph => {
+        const items = phaseItems[ph.id];
+        if (items && items.length > 0) {
+          const card = document.createElement("div");
+          card.className = "phase-card";
+          card.innerHTML = `
+            <div class="phase-card-header">
+              <span>${ph.name}</span>
+              <span style="font-size:0.75rem; color:var(--text-muted);">${items.length} Rules</span>
+            </div>
+            ${items.map(it => `
+              <div class="phase-item">
+                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                  <strong>${it.title}</strong>
+                  <span class="source">${it.source}</span>
+                </div>
+                <p>${it.desc}</p>
+              </div>
+            `).join("")}
+          `;
+          container.appendChild(card);
+        }
+      });
+    }
+
+    // --- UNIFIED RENDERING ---
+    function renderAll() {
+      const rules = evaluateArmyRules();
+
+      document.getElementById("total-minerals").innerText = rules.totalM;
+      document.getElementById("total-vespene").innerText = rules.totalV;
+      document.getElementById("total-supply").innerText = rules.totalS;
+      document.getElementById("total-faction-res").innerText = rules.totalFactionRes;
+      document.getElementById("army-count").innerText = army.length;
+      document.getElementById("subnav-army-count").innerText = army.length;
+      document.getElementById("tactic-count").innerText = selectedTactics.length;
+      document.getElementById("dep-count").innerText = selectedDeployments.length;
+      document.getElementById("mis-count").innerText = selectedMissions.length;
+
+      const banner = document.getElementById("legality-banner");
+      const statusText = document.getElementById("legality-status-text");
+      const badge = document.getElementById("legality-badge");
+      const issuesDiv = document.getElementById("legality-issues");
+
+      if (rules.isValid) {
+        banner.className = "legality-banner";
+        statusText.innerText = "✓ BATTLEGROUP LEGAL";
+        badge.innerText = "VALID";
+        badge.style.background = "var(--success)";
+        issuesDiv.innerHTML = "";
+      } else {
+        banner.className = "legality-banner invalid";
+        statusText.innerText = "⚠ RULES VIOLATION";
+        badge.innerText = "INVALID";
+        badge.style.background = "var(--danger)";
+        issuesDiv.innerHTML = rules.issues.map(msg => `<div>• ${msg}</div>`).join("");
+      }
+
+      const slotsDiv = document.getElementById("slots-dashboard");
+      slotsDiv.innerHTML = Object.keys(rules.capacity).map(k => `
+        <div class="slot-pill">
+          ${k}: <span>${rules.usedSlots[k]}/${rules.capacity[k]}</span>
+        </div>
+      `).join("");
+
+      renderCatalog();
+      renderRoster();
+      renderTactics();
+      renderMissionsAndDeployments();
+    }
+
+    function renderCatalog() {
+      const catDiv = document.getElementById("catalog-list");
+      const filter = document.getElementById("timeline-select").value;
+      catDiv.innerHTML = "";
+
+      const filtered = DB[currentFaction].units.filter(u => {
+        if (filter === "all") return true;
+        if (filter === "wave1") return u.release === "wave1";
+        if (filter === "2026") return u.release === "2026";
+        return true;
+      });
+
+      filtered.forEach(unit => {
+        const item = document.createElement("div");
+        const check = canAddUnit(unit);
+
+        let badgeClass = "badge-wave1";
+        if (unit.release === "2026") badgeClass = "badge-2026";
+
+        item.className = `catalog-item ${!check.allowed ? 'locked' : ''}`;
+        item.innerHTML = `
+          <div style="flex:1;">
+            <div style="font-weight:700; display:flex; align-items:center;">
+              ${unit.name}
+              <span class="release-badge ${badgeClass}">${unit.timelineLabel}</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${unit.type} • ${unit.slotType} • Sup: ${unit.baseSupply}</div>
+            ${!check.allowed ? `<div class="req-warning">⚠ ${check.reason}</div>` : ''}
+          </div>
+          <div style="text-align:right; margin-left:8px;">
+            <div style="color:var(--accent-mineral); font-weight:700;">${unit.baseCost} M</div>
+            <button class="${check.allowed ? 'btn-primary' : 'btn-disabled'}" 
+                    style="padding:5px 10px; font-size:0.8rem; margin-top:3px;" 
+                    onclick="addUnit('${unit.id}', event)">+ Add</button>
+          </div>
+        `;
+        item.onclick = () => {
+          renderDatasheet(unit);
+          if (window.innerWidth <= 900) switchMobileSubView("card");
+        };
+        catDiv.appendChild(item);
+      });
+    }
+
+    function renderRoster() {
+      const rosterDiv = document.getElementById("roster-list");
+      if (army.length === 0) {
+        rosterDiv.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; margin-top:20px;">No units added yet. Tap "Add Units" to muster your forces.</p>`;
+        return;
+      }
+
+      rosterDiv.innerHTML = "";
+      army.forEach(entry => {
+        const base = DB[currentFaction].units.find(u => u.id === entry.baseId);
+        let cost = base.baseCost;
+        let s = base.baseSupply;
+
+        base.upgrades.forEach(upg => {
+          if (entry.selectedUpgrades.includes(upg.id)) {
+            cost += upg.cost;
+            if (upg.supplyBonus) s += upg.supplyBonus;
+          }
+        });
+
+        const card = document.createElement("div");
+        card.className = "roster-card";
+        card.innerHTML = `
+          <div class="roster-header">
+            <div>
+              <span class="unit-title" onclick="showRosterUnitDatasheet(${entry.uid})">${base.name}</span>
+              <span style="font-size:0.75rem; color:var(--text-muted); margin-left:6px;">[${base.slotType} | Sup: ${s}]</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="color:var(--accent-mineral); font-weight:700;">${cost} M</span>
+              <button class="delete-btn" onclick="removeUnit(${entry.uid})">✕</button>
+            </div>
+          </div>
+          <div class="upgrade-list">
+            ${base.upgrades.map(upg => `
+              <label class="upgrade-option">
+                <input type="checkbox" ${entry.selectedUpgrades.includes(upg.id) ? "checked" : ""} onchange="toggleUpgrade(${entry.uid}, '${upg.id}')">
+                <span>${upg.name}</span>
+              </label>
+            `).join("")}
+          </div>
+        `;
+        rosterDiv.appendChild(card);
+      });
+    }
+
+    function renderTactics() {
+      const grid = document.getElementById("tactics-grid");
+      grid.innerHTML = "";
+      DB[currentFaction].tactics.forEach(tac => {
+        const isChecked = selectedTactics.includes(tac.id);
+        const card = document.createElement("div");
+        card.className = `tactic-card ${tac.isBase ? 'is-base' : ''}`;
+        
+        let slotsText = "";
+        if (tac.grantedSlots) {
+          slotsText = Object.entries(tac.grantedSlots).map(([k,v]) => `+${v} ${k}`).join(", ");
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="tactic-header">
+              <strong>${tac.name}</strong>
+              <span style="color:var(--accent-vespene); font-weight:700;">${tac.vespene} V</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">
+              Slots: <strong>${slotsText || 'None'}</strong> | +${tac.resVal} ${DB[currentFaction].resName}
+            </div>
+            <div style="font-size:0.8rem; line-height:1.3; margin-bottom:10px;">${tac.ability}</div>
+          </div>
+          <div>
+            ${tac.isBase ? `
+              <span style="font-size:0.75rem; color:#38bdf8; font-weight:bold;">[Automatic Faction Base]</span>
+            ` : `
+              <label style="font-size:0.8rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+                <input type="checkbox" ${isChecked ? "checked" : ""} onchange="toggleTactic('${tac.id}')">
+                <span>Field Structure Card</span>
+              </label>
+            `}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderMissionsAndDeployments() {
+      const depList = document.getElementById("deployment-list");
+      depList.innerHTML = DEPLOYMENT_STYLES.map(d => {
+        const isSel = selectedDeployments.includes(d.id);
+        return `
+          <div class="draft-card ${isSel ? 'selected' : ''}" onclick="toggleDep('${d.id}')">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>${d.name}</strong>
+              <input type="checkbox" ${isSel ? "checked" : ""} onclick="event.stopPropagation(); toggleDep('${d.id}')">
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px; line-height:1.3;">${d.desc}</p>
+          </div>
+        `;
+      }).join("");
+
+      const misList = document.getElementById("mission-list");
+      misList.innerHTML = MISSION_OBJECTIVES.map(m => {
+        const isSel = selectedMissions.includes(m.id);
+        return `
+          <div class="draft-card ${isSel ? 'selected' : ''}" onclick="toggleMis('${m.id}')">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>${m.name}</strong>
+              <input type="checkbox" ${isSel ? "checked" : ""} onclick="event.stopPropagation(); toggleMis('${m.id}')">
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px; line-height:1.3;">${m.desc}</p>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // --- DATASHEET PREVIEW ---
+    function showRosterUnitDatasheet(uid) {
+      const entry = army.find(u => u.uid === uid);
+      if (!entry) return;
+      const base = DB[currentFaction].units.find(u => u.id === entry.baseId);
+      renderDatasheet(base, entry.selectedUpgrades);
+      if (window.innerWidth <= 900) switchMobileSubView("card");
+    }
+
+    function renderDatasheet(unit, activeUpgrades = []) {
+      const preview = document.getElementById("card-view");
+
+      let models = unit.models;
+      let supply = unit.baseSupply;
+      let weapons = JSON.parse(JSON.stringify(unit.weapons));
+
+      unit.upgrades.forEach(upg => {
+        if (activeUpgrades.includes(upg.id)) {
+          if (upg.modelBonus) models += upg.modelBonus;
+          if (upg.supplyBonus) supply += upg.supplyBonus;
+          if (upg.weaponRoaBonus && weapons[0]) weapons[0].roa += upg.weaponRoaBonus;
+        }
+      });
+
+      const iconSvg = currentFaction === "Terran" ? ICONS.terran : currentFaction === "Zerg" ? ICONS.zerg : ICONS.protoss;
+      const customImg = customArtOverride[unit.id] || "";
+
+      preview.innerHTML = `
+        <div class="datasheet">
+          <div class="art-hologram" id="art-container-${unit.id}">
+            ${customImg ? `<img src="${customImg}" style="width:100%; height:100%; object-fit:cover;">` : `
+              ${iconSvg}
+              <div class="holo-label">${unit.name}</div>
+            `}
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <label style="font-size:0.7rem; color:var(--text-muted);">Custom Art URL:</label>
+            <input type="text" placeholder="Paste link here" value="${customImg}" 
+                   style="font-size:0.75rem; width:65%; padding:4px 6px;" 
+                   onchange="setCustomArt('${unit.id}', this.value)">
+          </div>
+
+          <div class="sheet-title-row">
+            <div>
+              <div class="sheet-name">${unit.name}</div>
+              <div class="tags">Tags: ${unit.tags}</div>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:0.75rem; color:var(--text-muted);">Squad:</span> <strong>${models}</strong>
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat-box"><div class="stat-label">Spd</div><div class="stat-val">${unit.speed}</div></div>
+            <div class="stat-box"><div class="stat-label">Arm</div><div class="stat-val">${unit.armour}</div></div>
+            <div class="stat-box"><div class="stat-label">HP</div><div class="stat-val">${unit.health}</div></div>
+            <div class="stat-box"><div class="stat-label">Shd</div><div class="stat-val">${unit.shields}</div></div>
+            <div class="stat-box"><div class="stat-label">Sup</div><div class="stat-val">${supply}</div></div>
+          </div>
+
+          <div style="font-weight:700; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">WEAPONS & COMBAT</div>
+          <table class="sheet-table">
+            <thead>
+              <tr><th>Weapon</th><th>RNG</th><th>Hit</th><th>RoA</th><th>Surge</th><th>DMG</th></tr>
+            </thead>
+            <tbody>
+              ${weapons.map(w => `
+                <tr>
+                  <td><strong>${w.name}</strong></td>
+                  <td>${w.rng}</td>
+                  <td>${w.hit}</td>
+                  <td>${w.roa}</td>
+                  <td>${w.surge}</td>
+                  <td>${w.dmg}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+
+          <div style="font-weight:700; font-size:0.75rem; color:var(--text-muted); margin-top:8px; margin-bottom:4px;">ABILITIES & ACTIONS</div>
+          ${unit.abilities.map(a => `
+            <div class="ability-block">
+              <strong>${a.name} [${a.phase}]:</strong> ${a.desc}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function setCustomArt(unitId, url) {
+      customArtOverride[unitId] = url;
+      const unit = DB[currentFaction].units.find(u => u.id === unitId);
+      renderDatasheet(unit);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
