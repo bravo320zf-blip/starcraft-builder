@@ -1,39 +1,38 @@
-const CACHE_NAME = 'sctmg-v1';
+const CACHE_NAME = 'sctmg-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './images/icon-192.png',
-  './images/icon-512.png',
-  './images/Logo.png'
+  './images/Logo.png',
+  './images/Icon192.png',
+  './images/Icon512.png'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
+self.addEventListener('install', (event) => {
+  event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      // Safe add: will not abort install if an asset is temporarily unreachable
+      return Promise.allSettled(
+        ASSETS.map((url) => cache.add(url).catch((err) => console.warn('PWA Cache skip:', url)))
+      );
     })
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     })
   );
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
