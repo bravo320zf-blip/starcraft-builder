@@ -37,17 +37,8 @@
       gap: 10px;
       z-index: 20;
     }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .brand-logo {
-      height: 38px;
-      max-width: 180px;
-      object-fit: contain;
-      display: block;
-    }
+    .brand { display: flex; align-items: center; gap: 8px; }
+    .brand-logo { height: 38px; max-width: 180px; object-fit: contain; display: block; }
 
     .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between; }
     @media (min-width: 901px) {
@@ -352,7 +343,6 @@
 
   <!-- Tab 1: Units Workspace -->
   <div id="tab-units" class="workspace view-catalog">
-    <!-- Panel 1: Unit Selection Catalog -->
     <div class="panel sidebar" id="panel-catalog">
       <div style="margin-bottom: 8px;">
         <select id="timeline-select" onchange="renderCatalog()" style="width:100%;">
@@ -365,7 +355,6 @@
       <div class="catalog-list-container" id="catalog-list"></div>
     </div>
 
-    <!-- Panel 2: Live Army Roster & Validation -->
     <div class="panel army-roster" id="panel-roster">
       <div id="legality-banner" class="legality-banner">
         <div class="legality-title">
@@ -381,7 +370,6 @@
       <div id="roster-list"></div>
     </div>
 
-    <!-- Panel 3: Active Datasheet Preview -->
     <div class="panel card-preview" id="panel-card">
       <h3>Active Datasheet</h3>
       <div id="card-view">
@@ -429,8 +417,8 @@
   </div>
 
   <script>
-    // --- FACTION DATABASE ---
-    const DB = {
+    // --- DEFAULT STAT BASELINE ---
+    const DEFAULT_DB = {
       Terran: {
         resName: "CP",
         units: [
@@ -1063,6 +1051,13 @@
       }
     };
 
+    // Initialize Database with LocalStorage cache fallback
+    let DB = JSON.parse(JSON.stringify(DEFAULT_DB));
+    try {
+      const cached = localStorage.getItem("sc_tmg_rules_db");
+      if (cached) DB = JSON.parse(cached);
+    } catch(e) {}
+
     // Pre-Game Cards
     const DEPLOYMENT_STYLES = [
       { id: "dep_edge", name: "Standard Entry Edge", phase: "Deployment Phase", desc: "Forces enter base-first from respective long table edges on turn 1." },
@@ -1096,6 +1091,28 @@
       autoSelectBaseStructure();
       renderAll();
       renderDatasheet(DB[currentFaction].units[0]);
+      checkRemoteRulesUpdate(); // Silent background check on every app launch
+    }
+
+    // --- SILENT BACKGROUND UPDATE ENGINE ---
+    async function checkRemoteRulesUpdate() {
+      try {
+        // Fetches rules-patch.json from your GitHub repository
+        const res = await fetch("rules-patch.json", { cache: "no-cache" });
+        if (!res.ok) return;
+        const patch = await res.json();
+        if (!patch || !patch.version) return;
+
+        const currentVersion = localStorage.getItem("sc_tmg_rules_version") || "1.0.0";
+        if (patch.version !== currentVersion && patch.db) {
+          DB = patch.db;
+          localStorage.setItem("sc_tmg_rules_db", JSON.stringify(DB));
+          localStorage.setItem("sc_tmg_rules_version", patch.version);
+          renderAll(); // Silently update unit list and stats immediately
+        }
+      } catch (err) {
+        // Fails silently if offline or file doesn't exist
+      }
     }
 
     function switchMobileSubView(view) {
@@ -1680,7 +1697,7 @@
       }).join("");
     }
 
-    // --- DATASHEET PREVIEW ---
+    // --- DATASHEET PREVIEW (CLEAN TEXT & STAT CARD) ---
     function showRosterUnitDatasheet(uid) {
       const entry = army.find(u => u.uid === uid);
       if (!entry) return;
@@ -1717,11 +1734,11 @@
           </div>
 
           <div class="stat-row">
-            <div class="stat-box"><div class="stat-label">Speed</div><div class="stat-val">${unit.speed}</div></div>
-            <div class="stat-box"><div class="stat-label">Armour</div><div class="stat-val">${unit.armour}</div></div>
-            <div class="stat-box"><div class="stat-label">Health</div><div class="stat-val">${unit.health}</div></div>
-            <div class="stat-box"><div class="stat-label">Shields</div><div class="stat-val">${unit.shields}</div></div>
-            <div class="stat-box"><div class="stat-label">Supply</div><div class="stat-val">${supply}</div></div>
+            <div class="stat-box"><div class="stat-label">Spd</div><div class="stat-val">${unit.speed}</div></div>
+            <div class="stat-box"><div class="stat-label">Arm</div><div class="stat-val">${unit.armour}</div></div>
+            <div class="stat-box"><div class="stat-label">HP</div><div class="stat-val">${unit.health}</div></div>
+            <div class="stat-box"><div class="stat-label">Shd</div><div class="stat-val">${unit.shields}</div></div>
+            <div class="stat-box"><div class="stat-label">Sup</div><div class="stat-val">${supply}</div></div>
           </div>
 
           <div style="font-weight:700; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">WEAPONS & COMBAT</div>
