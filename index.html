@@ -29,7 +29,7 @@
     header {
       background: var(--bg-panel);
       border-bottom: 2px solid var(--border);
-      padding: 10px 14px;
+      padding: 8px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -37,8 +37,18 @@
       gap: 10px;
       z-index: 20;
     }
-    .brand { font-size: 1.1rem; font-weight: 900; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
-    .brand span { color: var(--accent-mineral); }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-logo {
+      height: 38px;
+      max-width: 180px;
+      object-fit: contain;
+      display: block;
+    }
+
     .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%; justify-content: space-between; }
     @media (min-width: 901px) {
       .controls { width: auto; justify-content: flex-end; }
@@ -120,7 +130,7 @@
     }
     .tab-btn.active { color: var(--accent-mineral); border-bottom-color: var(--accent-mineral); background: rgba(56, 189, 248, 0.05); }
 
-    /* Mobile Sub-Navigation Bar (Shown only on <= 900px) */
+    /* Mobile Sub-Navigation Bar */
     .mobile-subnav {
       display: none;
       background: #141c2c;
@@ -144,7 +154,7 @@
       background: rgba(56, 189, 248, 0.1);
     }
 
-    /* Robust Responsive Layout */
+    /* Responsive Workspace Layout */
     .workspace {
       display: flex;
       flex: 1;
@@ -153,7 +163,7 @@
     }
     .panel { overflow-y: auto; padding: 12px; }
 
-    /* Desktop View Mode (> 900px): All 3 columns visible side-by-side ALWAYS */
+    /* Desktop View Mode (> 900px) */
     @media (min-width: 901px) {
       .workspace {
         flex-direction: row !important;
@@ -181,7 +191,7 @@
       }
     }
 
-    /* Mobile View Mode (<= 900px): Clean class-based toggling without inline display styling */
+    /* Mobile View Mode (<= 900px) */
     @media (max-width: 900px) {
       .mobile-subnav { display: flex !important; }
       
@@ -232,26 +242,22 @@
     .delete-btn { color: #f87171; border: none; background: transparent; font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
 
     /* Datasheet Card */
-    .datasheet { background: #090d16; border: 2px solid var(--border); border-radius: 8px; padding: 12px; }
-    .art-hologram { width: 100%; height: 120px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #2b3952; background: radial-gradient(circle, #17243c 0%, #060910 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-    .art-hologram svg { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6)); transform: scale(0.9); }
-    .holo-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-top: 4px; font-weight: bold; }
-
-    .sheet-title-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #24314c; padding-bottom: 6px; margin-bottom: 8px; }
-    .sheet-name { font-size: 1.15rem; font-weight: 900; }
-    .tags { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .datasheet { background: #090d16; border: 2px solid var(--border); border-radius: 8px; padding: 14px; }
+    .sheet-title-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #24314c; padding-bottom: 6px; margin-bottom: 10px; }
+    .sheet-name { font-size: 1.2rem; font-weight: 900; }
+    .tags { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
     
-    .stat-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; text-align: center; margin-bottom: 10px; }
-    .stat-box { background: #121927; padding: 5px 2px; border-radius: 5px; border: 1px solid #1c273e; }
-    .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-    .stat-val { font-size: 1rem; font-weight: 900; color: var(--accent-mineral); }
+    .stat-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; text-align: center; margin-bottom: 12px; }
+    .stat-box { background: #121927; padding: 6px 2px; border-radius: 5px; border: 1px solid #1c273e; }
+    .stat-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .stat-val { font-size: 1.05rem; font-weight: 900; color: var(--accent-mineral); }
 
-    .sheet-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 0.75rem; }
-    .sheet-table th, .sheet-table td { padding: 5px 4px; text-align: left; }
+    .sheet-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 0.75rem; }
+    .sheet-table th, .sheet-table td { padding: 6px 4px; text-align: left; }
     .sheet-table th { background: #141b2c; color: var(--text-muted); font-size: 0.68rem; }
     .sheet-table tr:nth-child(even) { background: #0d131f; }
 
-    .ability-block { font-size: 0.78rem; margin-top: 6px; background: #111724; padding: 7px 8px; border-radius: 4px; border-left: 3px solid var(--accent-mineral); }
+    .ability-block { font-size: 0.78rem; margin-top: 6px; background: #111724; padding: 8px 10px; border-radius: 4px; border-left: 3px solid var(--accent-mineral); }
     .ability-block strong { color: #e2e8f0; }
 
     /* Tactics & Draft Cards */
@@ -295,7 +301,10 @@
 
   <!-- Header -->
   <header>
-    <div class="brand">🚀 StarCraft <span>TMG Forge</span></div>
+    <div class="brand">
+      <img src="images/Logo.png" alt="StarCraft TMG Forge" class="brand-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display:none; font-weight:900; font-size:1.1rem; color:var(--accent-mineral);">STARCRAFT TMG</span>
+    </div>
     
     <div class="resource-counter">
       <div>M: <span id="total-minerals" class="res-minerals">0</span>/<span id="max-minerals">2000</span></div>
@@ -334,14 +343,14 @@
     <button class="tab-btn" onclick="switchTab('reminders')">4. Phase Reminders</button>
   </div>
 
-  <!-- Mobile Sub-Navigation Bar (Shown only on small screens) -->
+  <!-- Mobile Sub-Navigation Bar -->
   <div class="mobile-subnav" id="mobile-subnav">
     <button id="btn-subnav-catalog" class="active" onclick="switchMobileSubView('catalog')">1. Add Units</button>
     <button id="btn-subnav-roster" onclick="switchMobileSubView('roster')">2. Army List (<span id="subnav-army-count">0</span>)</button>
     <button id="btn-subnav-card" onclick="switchMobileSubView('card')">3. Stat Card</button>
   </div>
 
-  <!-- Tab 1: Units Workspace (Defaults to view-catalog on mobile) -->
+  <!-- Tab 1: Units Workspace -->
   <div id="tab-units" class="workspace view-catalog">
     <!-- Panel 1: Unit Selection Catalog -->
     <div class="panel sidebar" id="panel-catalog">
@@ -420,13 +429,6 @@
   </div>
 
   <script>
-    // --- VECTOR HOLOGRAMS ---
-    const ICONS = {
-      terran: `<svg width="60" height="60" viewBox="0 0 100 100" fill="none"><polygon points="50,5 90,25 90,75 50,95 10,75 10,25" stroke="#38bdf8" stroke-width="4" fill="rgba(56,189,248,0.1)"/><path d="M50 20 L50 80 M30 35 L70 35 M25 65 L75 65" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="12" fill="#38bdf8"/></svg>`,
-      zerg: `<svg width="60" height="60" viewBox="0 0 100 100" fill="none"><path d="M50 10 C20 30 15 65 30 85 C45 100 55 100 70 85 C85 65 80 30 50 10 Z" stroke="#f87171" stroke-width="4" fill="rgba(248,113,113,0.1)"/><path d="M35 45 Q50 60 65 45 Q50 75 35 45 Z" fill="#f87171"/><circle cx="40" cy="35" r="4" fill="#f87171"/><circle cx="60" cy="35" r="4" fill="#f87171"/></svg>`,
-      protoss: `<svg width="60" height="60" viewBox="0 0 100 100" fill="none"><polygon points="50,5 85,50 50,95 15,50" stroke="#facc15" stroke-width="4" fill="rgba(250,204,21,0.1)"/><polygon points="50,25 70,50 50,75 30,50" stroke="#facc15" stroke-width="3" fill="#facc15"/><line x1="50" y1="5" x2="50" y2="95" stroke="#facc15" stroke-width="2"/></svg>`
-    };
-
     // --- FACTION DATABASE ---
     const DB = {
       Terran: {
@@ -1087,9 +1089,8 @@
     let selectedTactics = [];
     let selectedDeployments = ["dep_edge", "dep_drop"];
     let selectedMissions = ["mis_minerals", "mis_koth"];
-    let customArtOverride = {};
     let nextUid = 1;
-    let activeMobileSubView = "catalog"; // Default to catalog on mobile so units are visible immediately
+    let activeMobileSubView = "catalog";
 
     function init() {
       autoSelectBaseStructure();
@@ -1097,7 +1098,6 @@
       renderDatasheet(DB[currentFaction].units[0]);
     }
 
-    // Class-based view switcher that NEVER mutates inline display properties
     function switchMobileSubView(view) {
       activeMobileSubView = view;
       const workspace = document.getElementById("tab-units");
@@ -1568,7 +1568,7 @@
     function renderRoster() {
       const rosterDiv = document.getElementById("roster-list");
       if (army.length === 0) {
-        rosterDiv.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; margin-top:20px;">No units added yet. Tap "Add Units" to muster your forces.</p>`;
+        rosterDiv.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem; margin-top:20px;">No units added yet. Tap "1. Add Units" to muster your forces.</p>`;
         return;
       }
 
@@ -1704,41 +1704,24 @@
         }
       });
 
-      const iconSvg = currentFaction === "Terran" ? ICONS.terran : currentFaction === "Zerg" ? ICONS.zerg : ICONS.protoss;
-      const customImg = customArtOverride[unit.id] || "";
-
       preview.innerHTML = `
         <div class="datasheet">
-          <div class="art-hologram" id="art-container-${unit.id}">
-            ${customImg ? `<img src="${customImg}" style="width:100%; height:100%; object-fit:cover;">` : `
-              ${iconSvg}
-              <div class="holo-label">${unit.name}</div>
-            `}
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="font-size:0.7rem; color:var(--text-muted);">Custom Art URL:</label>
-            <input type="text" placeholder="Paste link here" value="${customImg}" 
-                   style="font-size:0.75rem; width:65%; padding:4px 6px;" 
-                   onchange="setCustomArt('${unit.id}', this.value)">
-          </div>
-
           <div class="sheet-title-row">
             <div>
               <div class="sheet-name">${unit.name}</div>
               <div class="tags">Tags: ${unit.tags}</div>
             </div>
             <div style="text-align:right;">
-              <span style="font-size:0.75rem; color:var(--text-muted);">Squad:</span> <strong>${models}</strong>
+              <span style="font-size:0.75rem; color:var(--text-muted);">Squad:</span> <strong>${models} Models</strong>
             </div>
           </div>
 
           <div class="stat-row">
-            <div class="stat-box"><div class="stat-label">Spd</div><div class="stat-val">${unit.speed}</div></div>
-            <div class="stat-box"><div class="stat-label">Arm</div><div class="stat-val">${unit.armour}</div></div>
-            <div class="stat-box"><div class="stat-label">HP</div><div class="stat-val">${unit.health}</div></div>
-            <div class="stat-box"><div class="stat-label">Shd</div><div class="stat-val">${unit.shields}</div></div>
-            <div class="stat-box"><div class="stat-label">Sup</div><div class="stat-val">${supply}</div></div>
+            <div class="stat-box"><div class="stat-label">Speed</div><div class="stat-val">${unit.speed}</div></div>
+            <div class="stat-box"><div class="stat-label">Armour</div><div class="stat-val">${unit.armour}</div></div>
+            <div class="stat-box"><div class="stat-label">Health</div><div class="stat-val">${unit.health}</div></div>
+            <div class="stat-box"><div class="stat-label">Shields</div><div class="stat-val">${unit.shields}</div></div>
+            <div class="stat-box"><div class="stat-label">Supply</div><div class="stat-val">${supply}</div></div>
           </div>
 
           <div style="font-weight:700; font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">WEAPONS & COMBAT</div>
@@ -1768,12 +1751,6 @@
           `).join("")}
         </div>
       `;
-    }
-
-    function setCustomArt(unitId, url) {
-      customArtOverride[unitId] = url;
-      const unit = DB[currentFaction].units.find(u => u.id === unitId);
-      renderDatasheet(unit);
     }
 
     window.onload = init;
