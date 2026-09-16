@@ -165,7 +165,7 @@
       padding: 20px 16px !important;
     }
 
-    /* Desktop View Mode (> 900px) for Units Tab */
+    /* Desktop View Mode (> 900px) */
     @media (min-width: 901px) {
       #tab-units {
         flex-direction: row !important;
@@ -232,7 +232,9 @@
 
     .release-badge { display: inline-block; font-size: 0.6rem; padding: 2px 4px; border-radius: 3px; font-weight: 700; margin-left: 4px; text-transform: uppercase; }
     .badge-wave1 { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid #38bdf8; }
-    .badge-2026 { background: rgba(251, 146, 60, 0.2); color: #fb923c; border: 1px solid #fb923c; }
+    .badge-wave2 { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+    .badge-wave3 { background: rgba(251, 146, 60, 0.2); color: #fb923c; border: 1px solid #fb923c; }
+    .badge-future { background: rgba(192, 132, 252, 0.2); color: #c084fc; border: 1px solid #c084fc; }
 
     /* Roster Cards */
     .roster-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
@@ -263,7 +265,7 @@
     .ability-block { font-size: 0.78rem; margin-top: 6px; background: #111724; padding: 8px 10px; border-radius: 4px; border-left: 3px solid var(--accent-mineral); }
     .ability-block strong { color: #e2e8f0; }
 
-    /* Tactics & Structure Grid (Clean Responsive Card Matrix) */
+    /* Tactics & Structure Grid */
     .tactics-grid {
       display: grid !important;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
@@ -371,9 +373,12 @@
     <div class="panel sidebar" id="panel-catalog">
       <div style="margin-bottom: 8px;">
         <select id="timeline-select" onchange="renderCatalog()" style="width:100%;">
-          <option value="all">Timeline: All Units</option>
+          <option value="all">Timeline: All Releases</option>
           <option value="wave1">Wave 1 Only (Founders)</option>
-          <option value="2026">2026 Releases (Wave 2-5)</option>
+          <option value="wave2">Wave 2 (Heavy Support)</option>
+          <option value="wave3">Wave 3 (Casters & Psionics)</option>
+          <option value="wave4">Wave 4 (Tactical Flyers)</option>
+          <option value="future">Wave 5+ (Brood War & Titans)</option>
         </select>
       </div>
       <h3>Unit Catalog</h3>
@@ -442,11 +447,12 @@
   </div>
 
   <script>
-    // --- DEFAULT STAT BASELINE ---
+    // --- COMPREHENSIVE ROADMAP DATABASE ---
     const DEFAULT_DB = {
       Terran: {
         resName: "CP",
         units: [
+          // Wave 1
           {
             id: "t_raynor",
             name: "Jim Raynor",
@@ -456,7 +462,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Hero Commander",
-            baseCost: 190,
+            baseCost: 185,
             baseSupply: 2,
             models: 1,
             speed: '6"',
@@ -485,7 +491,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Core Infantry",
-            baseCost: 160,
+            baseCost: 140,
             baseSupply: 1,
             models: 6,
             speed: '5"',
@@ -503,8 +509,8 @@
             upgrades: [
               { 
                 id: "squad_12", 
-                name: "Full Squad (12 Marines) (+110 M, +1 Sup)", 
-                cost: 110, 
+                name: "Full Squad (12 Marines) (+100 M, +1 Sup)", 
+                cost: 100, 
                 supplyBonus: 1, 
                 modelBonus: 6, 
                 weaponRoaBonus: 6, 
@@ -550,7 +556,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Heavy Infantry",
-            baseCost: 150,
+            baseCost: 145,
             baseSupply: 1,
             models: 2,
             speed: '5"',
@@ -566,7 +572,7 @@
               { name: "Stimpack (1 CP)", phase: "Assault Phase (Activation)", desc: "Take 2 wounds to gain +2\" Move and +2 Precision hits." }
             ],
             upgrades: [
-              { id: "reinforce_4", name: "Reinforce to 4 Marauders (+130 M, +1 Sup)", cost: 130, supplyBonus: 1, modelBonus: 2, weaponRoaBonus: 4, desc: "Increases squad to 4 models." },
+              { id: "reinforce_4", name: "Reinforce to 4 Marauders (+125 M, +1 Sup)", cost: 125, supplyBonus: 1, modelBonus: 2, weaponRoaBonus: 4, desc: "Increases squad to 4 models." },
               { id: "kinetic_foam", name: "Kinetic Foam (+40 M)", cost: 40, desc: "Gain Tough (1) on the first armour save of each phase." }
             ]
           },
@@ -578,7 +584,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Elite Mech",
-            baseCost: 190,
+            baseCost: 185,
             baseSupply: 2,
             models: 1,
             speed: '6"',
@@ -605,7 +611,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Support",
-            baseCost: 110,
+            baseCost: 105,
             baseSupply: 1,
             models: 3,
             speed: '5"',
@@ -622,15 +628,17 @@
             ],
             upgrades: []
           },
+
+          // Wave 2
           {
             id: "t_siege_tank",
             name: "Crucio Siege Tank",
             slotType: "Heavy",
             reqStructure: "t_factory",
-            release: "2026",
-            timelineLabel: "2026 Wave 2",
+            release: "wave2",
+            timelineLabel: "Wave 2 (Heavy)",
             type: "Artillery",
-            baseCost: 260,
+            baseCost: 255,
             baseSupply: 2,
             models: 1,
             speed: '5"',
@@ -648,6 +656,149 @@
             ],
             upgrades: [
               { id: "shaped_blast", name: "Shaped Blast (+30 M)", cost: 30, desc: "Allies take 0 splash damage." }
+            ]
+          },
+
+          // Wave 3
+          {
+            id: "t_nova",
+            name: "Nova Terra",
+            slotType: "Hero",
+            isHero: true,
+            reqStructure: "t_orbital",
+            release: "wave3",
+            timelineLabel: "Wave 3 (Casters)",
+            type: "Hero Operative",
+            baseCost: 180,
+            baseSupply: 1,
+            models: 1,
+            speed: '6"',
+            armour: "4+",
+            health: 5,
+            shields: 2,
+            tags: "Ground, Biological, Hero, Psionic, Stealth",
+            weapons: [
+              { name: "C-20A Canister Rifle", rng: '24"', hit: "2+", roa: 2, surge: "Pierce (3) / Snipe", dmg: 4 }
+            ],
+            abilities: [
+              { name: "Personal Cloaking", phase: "Movement Phase", desc: "Cannot be targeted at range beyond 12\"." },
+              { name: "Sniper Shot (1 CP)", phase: "Assault Phase (Shooting)", desc: "Ignores target armour saves against Biological models." },
+              { name: "Tactical Nuke Strike (3 CP)", phase: "End / Scoring Phase", desc: "Beacon detonation deals 8 damage (Blast 4) to all units." }
+            ],
+            upgrades: [
+              { id: "ghost_sensor", name: "Ocular Implants (+20 M)", cost: 20, desc: "Gains Detector and +4\" range." }
+            ]
+          },
+          {
+            id: "t_raven",
+            name: "Raven Drone Craft",
+            slotType: "Air",
+            reqStructure: "t_starport",
+            release: "wave3",
+            timelineLabel: "Wave 3 (Support)",
+            type: "Tactical Specialist",
+            baseCost: 160,
+            baseSupply: 2,
+            models: 1,
+            speed: '8"',
+            armour: "4+",
+            health: 5,
+            shields: 0,
+            tags: "Flyer, Mechanical, Detector, Support",
+            weapons: [
+              { name: "Point Defense Laser", rng: '10"', hit: "4+", roa: 2, surge: "-", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Deploy Auto-Turret (1 CP)", phase: "Assault Phase", desc: "Deploy automated turret within 6\" firing 4 attacks." },
+              { name: "Interference Matrix", phase: "Assault Phase", desc: "Target enemy cannot fire or use active abilities." },
+              { name: "Anti-Armor Missile", phase: "Assault Phase", desc: "Hit target suffers -2 Armour saves." }
+            ],
+            upgrades: []
+          },
+
+          // Wave 4
+          {
+            id: "t_banshee",
+            name: "Banshee Gunship",
+            slotType: "Air",
+            reqStructure: "t_starport",
+            release: "wave4",
+            timelineLabel: "Wave 4 (Flyers)",
+            type: "Air Assault",
+            baseCost: 205,
+            baseSupply: 2,
+            models: 1,
+            speed: '10"',
+            armour: "4+",
+            health: 6,
+            shields: 0,
+            tags: "Flyer, Mechanical, Strike Craft",
+            weapons: [
+              { name: "Backlash Rockets", rng: '14"', hit: "3+", roa: 6, surge: "Ground / Pierce (1)", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Cloaking Field (1 CP)", phase: "Movement Phase", desc: "Gain Stealth. Cannot be targeted beyond 8\"." },
+              { name: "Strafing Run", phase: "Movement Phase", desc: "Can fire halfway through movement, then complete move." }
+            ],
+            upgrades: [
+              { id: "hyperflight", name: "Hyperflight Rotors (+30 M)", cost: 30, desc: "Increases speed to 12\"." }
+            ]
+          },
+
+          // Future Waves
+          {
+            id: "t_firebat",
+            name: "Firebat Squad",
+            slotType: "Core",
+            reqStructure: "t_barracks_tech",
+            release: "future",
+            timelineLabel: "Wave 5 (Brood War)",
+            type: "Assault Infantry",
+            baseCost: 145,
+            baseSupply: 1,
+            models: 3,
+            speed: '5"',
+            armour: "3+",
+            health: 3,
+            shields: 0,
+            tags: "Ground, Biological, Armoured",
+            weapons: [
+              { name: "Perdition Flamethrowers", rng: '8"', hit: "3+", roa: 6, surge: "Blast (1) / Incendiary", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Juggernaut Plating", phase: "Assault / Fight Phase", desc: "+1 Armour save against Light weapon attacks." },
+              { name: "Napalm Burn", phase: "Assault Phase", desc: "Targets lose cover bonuses for the rest of the phase." }
+            ],
+            upgrades: [
+              { id: "pre_igniter", name: "Infernal Pre-Igniter (+30 M)", cost: 30, desc: "+1 Damage against Light units." }
+            ]
+          },
+          {
+            id: "t_thor",
+            name: "Thor Heavy Mech",
+            slotType: "Mech",
+            reqStructure: "t_factory",
+            release: "future",
+            timelineLabel: "Wave 6 (Titans)",
+            type: "Super-Heavy Walker",
+            baseCost: 350,
+            baseSupply: 3,
+            models: 1,
+            speed: '4"',
+            armour: "2+",
+            health: 12,
+            shields: 0,
+            tags: "Ground, Mechanical, Massive, Colossus, 160mm Base",
+            weapons: [
+              { name: "Thors Hammer Cannons", rng: '18"', hit: "3+", roa: 6, surge: "Pierce (2) / Heavy", dmg: 4 },
+              { name: "Javelin Missile Volley", rng: '24"', hit: "3+", roa: 6, surge: "Air / Light", dmg: 2 }
+            ],
+            abilities: [
+              { name: "High Impact Payload", phase: "Assault Phase", desc: "Swap anti-air to 35\" single-target cannons delivering 6 DMG." },
+              { name: "Colossal Stride", phase: "Movement Phase", desc: "Walks over terrain and enemy infantry under 2\" height." }
+            ],
+            upgrades: [
+              { id: "immortality", name: "Immortality Protocol (+50 M)", cost: 50, desc: "When destroyed, revive for 2 CP with 4 HP." }
             ]
           }
         ],
@@ -678,7 +829,7 @@
             resVal: 1, 
             grantedSlots: { Heavy: 1, Support: 1 },
             phase: "Assault Phase",
-            ability: "Tech Infusion: Unlocks Marauders and Medics; +1 Heavy & +1 Support slot." 
+            ability: "Tech Infusion: Unlocks Marauders, Medics, and Firebats; +1 Heavy & +1 Support slot." 
           },
           { 
             id: "t_factory", 
@@ -690,19 +841,29 @@
             ability: "Overclock Engines: Mech units gain +3\" Speed during their move activation." 
           },
           { 
+            id: "t_starport", 
+            name: "Starport Flight Deck", 
+            vespene: 45, 
+            resVal: 1, 
+            grantedSlots: { Air: 2 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Banshees and Ravens; provides +2 Air slots." 
+          },
+          { 
             id: "t_orbital", 
             name: "Orbital Command Station", 
             vespene: 60, 
             resVal: 2, 
             grantedSlots: { Hero: 1, Support: 1 },
             phase: "Macro / Round Start",
-            ability: "Scanner Sweep: Reveal all Burrowed/Stealth units across the board for the round." 
+            ability: "Scanner Sweep: Unlocks Nova Terra; reveals all Burrowed/Stealth units for the round." 
           }
         ]
       },
       Zerg: {
         resName: "BM",
         units: [
+          // Wave 1
           {
             id: "z_kerrigan",
             name: "Sarah Kerrigan",
@@ -712,7 +873,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Hero Commander",
-            baseCost: 220,
+            baseCost: 215,
             baseSupply: 2,
             models: 1,
             speed: '8"',
@@ -740,7 +901,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Core Swarm",
-            baseCost: 180,
+            baseCost: 160,
             baseSupply: 1,
             models: 12,
             speed: '8"',
@@ -758,8 +919,8 @@
             upgrades: [
               { 
                 id: "squad_24_zerg", 
-                name: "Full Swarm (24 Zerglings) (+120 M, +1 Sup)", 
-                cost: 120, 
+                name: "Full Swarm (24 Zerglings) (+110 M, +1 Sup)", 
+                cost: 110, 
                 supplyBonus: 1, 
                 modelBonus: 12, 
                 weaponRoaBonus: 12, 
@@ -795,7 +956,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Assault Beast",
-            baseCost: 170,
+            baseCost: 165,
             baseSupply: 1,
             models: 3,
             speed: '5"',
@@ -811,7 +972,7 @@
               { name: "Burrow Ambush", phase: "Movement Phase (Reserves)", desc: "Deploy anywhere on the table outside 10\" of enemies." }
             ],
             upgrades: [
-              { id: "roach_6", name: "Double Pack (6 Roaches) (+140 M, +1 Sup)", cost: 140, supplyBonus: 1, modelBonus: 3, weaponRoaBonus: 6, desc: "Increases pack to 6 models." },
+              { id: "roach_6", name: "Double Pack (6 Roaches) (+135 M, +1 Sup)", cost: 135, supplyBonus: 1, modelBonus: 3, weaponRoaBonus: 6, desc: "Increases pack to 6 models." },
               { 
                 id: "corpser_strain", 
                 name: "Strain: Corpser Strains (+35 M)", 
@@ -837,7 +998,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Ranged Hunter",
-            baseCost: 140,
+            baseCost: 135,
             baseSupply: 1,
             models: 2,
             speed: '6"',
@@ -852,7 +1013,200 @@
               { name: "Grooved Spines", phase: "Assault Phase (Shooting)", desc: "Ignores target cover bonuses at ranges under 10\"." }
             ],
             upgrades: [
-              { id: "reinforce_hydra_4", name: "Reinforce to 4 Hydras (+120 M, +1 Sup)", cost: 120, supplyBonus: 1, modelBonus: 2, weaponRoaBonus: 6, desc: "Reinforce unit to 4 models." }
+              { id: "reinforce_hydra_4", name: "Reinforce to 4 Hydras (+115 M, +1 Sup)", cost: 115, supplyBonus: 1, modelBonus: 2, weaponRoaBonus: 6, desc: "Reinforce unit to 4 models." }
+            ]
+          },
+          {
+            id: "z_queen",
+            name: "Swarm Queen",
+            slotType: "Support",
+            reqStructure: "z_hatchery",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Brood Support",
+            baseCost: 150,
+            baseSupply: 2,
+            models: 1,
+            speed: '4"',
+            armour: "4+",
+            health: 5,
+            shields: 0,
+            tags: "Ground, Biological, Support, Psionic",
+            weapons: [
+              { name: "Talons", rng: 'Melee', hit: "4+", roa: 3, surge: "-", dmg: 2 },
+              { name: "Acid Spores", rng: '14"', hit: "3+", roa: 4, surge: "Air", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Transfusion", phase: "Assault Phase", desc: "Restore 3 HP to an adjacent friendly Zerg unit." },
+              { name: "Creep Tumor", phase: "Macro / Round Start", desc: "Drop a Creep Marker within 6\" to expand terrain benefits." }
+            ],
+            upgrades: []
+          },
+
+          // Wave 2
+          {
+            id: "z_ravager",
+            name: "Ravager Brood",
+            slotType: "Heavy",
+            reqStructure: "z_roach_warren",
+            release: "wave2",
+            timelineLabel: "Wave 2 (Heavy)",
+            type: "Artillery Strain",
+            baseCost: 195,
+            baseSupply: 1,
+            models: 2,
+            speed: '6"',
+            armour: "4+",
+            health: 4,
+            shields: 0,
+            tags: "Ground, Biological, Armoured, Artillery",
+            weapons: [
+              { name: "Corrosive Spit", rng: '12"', hit: "4+", roa: 4, surge: "Armoured", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Corrosive Bile (1 BM)", phase: "Assault Phase", desc: "Deal 4 lethal damage ignoring cover up to 24\" away." },
+              { name: "Shatter Forcefield", phase: "Assault Phase", desc: "Instantly destroys Sentry Force Fields upon target impact." }
+            ],
+            upgrades: [
+              { id: "rapid_bile", name: "Bile Glands (+30 M)", cost: 30, desc: "Can fire Corrosive Bile twice per battle round." }
+            ]
+          },
+
+          // Wave 3
+          {
+            id: "z_zagara",
+            name: "Broodmother Zagara",
+            slotType: "Hero",
+            isHero: true,
+            reqStructure: "z_hatchery",
+            release: "wave3",
+            timelineLabel: "Wave 3 (Heroes)",
+            type: "Hero Commander",
+            baseCost: 190,
+            baseSupply: 2,
+            models: 1,
+            speed: '6"',
+            armour: "4+",
+            health: 7,
+            shields: 0,
+            tags: "Ground, Biological, Hero, Commander",
+            weapons: [
+              { name: "Spine Barrage", rng: '12"', hit: "3+", roa: 5, surge: "Light", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Baneling Barrage (1 BM)", phase: "Assault Phase", desc: "Launch 4 explosive rolling Banelings up to 12\" dealing Blast (1)." },
+              { name: "Hunter Killer Summon", phase: "Movement Phase", desc: "Spawn 2 Hunter-Killer Hydralisks into reserves." }
+            ],
+            upgrades: []
+          },
+          {
+            id: "z_defiler",
+            name: "Defiler",
+            slotType: "Support",
+            reqStructure: "z_lair",
+            release: "wave3",
+            timelineLabel: "Wave 3 (Casters)",
+            type: "Caster",
+            baseCost: 160,
+            baseSupply: 2,
+            models: 1,
+            speed: '5"',
+            armour: "5+",
+            health: 4,
+            shields: 0,
+            tags: "Ground, Biological, Psionic, Caster",
+            weapons: [
+              { name: "Mandible Bite", rng: 'Melee', hit: "5+", roa: 2, surge: "-", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Dark Swarm (2 BM)", phase: "Macro / Round Start", desc: "4\" cloud: units inside are immune to non-artillery ranged attacks." },
+              { name: "Plague", phase: "Assault Phase", desc: "Deal 1 unpreventable damage each activation to doused target." },
+              { name: "Consume", phase: "Macro / Round Start", desc: "Sacrifice one friendly Zergling to generate +2 Biomass." }
+            ],
+            upgrades: []
+          },
+
+          // Wave 4
+          {
+            id: "z_mutalisk",
+            name: "Mutalisk Flock",
+            slotType: "Air",
+            reqStructure: "z_lair",
+            release: "wave4",
+            timelineLabel: "Wave 4 (Flyers)",
+            type: "Air Assault",
+            baseCost: 200,
+            baseSupply: 2,
+            models: 3,
+            speed: '12"',
+            armour: "5+",
+            health: 3,
+            shields: 0,
+            tags: "Flyer, Biological, Fast Attack",
+            weapons: [
+              { name: "Glaive Wurm", rng: '12"', hit: "3+", roa: 6, surge: "Bounce", dmg: 2 }
+            ],
+            abilities: [
+              { name: "Glaive Bounce", phase: "Assault Phase", desc: "Hits bounce to an adjacent enemy model for 1 automatic damage." },
+              { name: "Hit & Run", phase: "Movement Phase", desc: "Shoot mid-movement and continue flying without overwatch triggers." }
+            ],
+            upgrades: [
+              { id: "tissue_regen", name: "Tissue Regen (+25 M)", cost: 25, desc: "Heal 1 wound per round." }
+            ]
+          },
+
+          // Future Waves
+          {
+            id: "z_lurker",
+            name: "Lurker Strain",
+            slotType: "Heavy",
+            reqStructure: "z_hydra_den",
+            release: "future",
+            timelineLabel: "Wave 5 (Brood War)",
+            type: "Ambush Artillery",
+            baseCost: 210,
+            baseSupply: 2,
+            models: 2,
+            speed: '6"',
+            armour: "4+",
+            health: 4,
+            shields: 0,
+            tags: "Ground, Biological, Armoured",
+            weapons: [
+              { name: "Subterranean Spines", rng: '16"', hit: "3+", roa: 6, surge: "Line / Pierce (2)", dmg: 3 }
+            ],
+            abilities: [
+              { name: "Burrow Required", phase: "Assault Phase", desc: "Can only attack while Burrowed. Spines damage every model in path." }
+            ],
+            upgrades: [
+              { id: "seismic", name: "Seismic Spines (+30 M)", cost: 30, desc: "+4\" attack line range." }
+            ]
+          },
+          {
+            id: "z_ultralisk",
+            name: "Ultralisk Titan",
+            slotType: "Heavy",
+            reqStructure: "z_hatchery",
+            release: "future",
+            timelineLabel: "Wave 6 (Titans)",
+            type: "Super-Heavy Assault",
+            baseCost: 360,
+            baseSupply: 3,
+            models: 1,
+            speed: '7"',
+            armour: "2+",
+            health: 14,
+            shields: 0,
+            tags: "Ground, Biological, Armoured, Massive, 160mm Base",
+            weapons: [
+              { name: "Kaiser Blades", rng: 'Melee', hit: "2+", roa: 8, surge: "Cleave / Pierce (3)", dmg: 5 }
+            ],
+            abilities: [
+              { name: "Monstrous Cleave", phase: "Fight Phase", desc: "Melee attacks hit all enemy models within 3\" of target." },
+              { name: "Unstoppable Charge", phase: "Assault Phase", desc: "Immune to slowing, stuns, and displacement." }
+            ],
+            upgrades: [
+              { id: "chitinous", name: "Chitinous Plating (+40 M)", cost: 40, desc: "Improves Armour to 1+ vs small-arms fire." }
             ]
           }
         ],
@@ -883,7 +1237,7 @@
             resVal: 1, 
             grantedSlots: { Heavy: 2 },
             phase: "Pre-Game Mustering",
-            ability: "Unlocks Roaches; provides +2 Heavy slots." 
+            ability: "Unlocks Roaches and Ravagers; provides +2 Heavy slots." 
           },
           { 
             id: "z_hydra_den", 
@@ -892,13 +1246,23 @@
             resVal: 1, 
             grantedSlots: { Core: 2, Support: 1 },
             phase: "Assault Phase (Shooting)",
-            ability: "Unlocks Hydralisks; provides +2 Core and +1 Support slot. Hydras gain +2\" range on Creep." 
+            ability: "Unlocks Hydralisks and Lurkers; provides +2 Core and +1 Support slot. Hydras gain +2\" range on Creep." 
+          },
+          { 
+            id: "z_lair", 
+            name: "Lair Mutation", 
+            vespene: 50, 
+            resVal: 2, 
+            grantedSlots: { Air: 2, Support: 1 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Mutalisks and Defilers; provides +2 Air and +1 Support slot." 
           }
         ]
       },
       Protoss: {
         resName: "PE",
         units: [
+          // Wave 1
           {
             id: "p_artanis",
             name: "Hierarch Artanis",
@@ -908,7 +1272,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Hero Commander",
-            baseCost: 230,
+            baseCost: 225,
             baseSupply: 2,
             models: 1,
             speed: '6"',
@@ -936,7 +1300,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Core Melee",
-            baseCost: 160,
+            baseCost: 150,
             baseSupply: 2,
             models: 3,
             speed: '6"',
@@ -954,8 +1318,8 @@
             upgrades: [
               { 
                 id: "zealot_6", 
-                name: "Full Phalanx (6 Zealots) (+140 M, +1 Sup)", 
-                cost: 140, 
+                name: "Full Phalanx (6 Zealots) (+130 M, +1 Sup)", 
+                cost: 130, 
                 supplyBonus: 1, 
                 modelBonus: 3, 
                 weaponRoaBonus: 8, 
@@ -985,7 +1349,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Ranged Infantry",
-            baseCost: 150,
+            baseCost: 145,
             baseSupply: 1,
             models: 4,
             speed: '6"',
@@ -1024,7 +1388,7 @@
             release: "wave1",
             timelineLabel: "Wave 1",
             type: "Cybernetic Walker",
-            baseCost: 170,
+            baseCost: 165,
             baseSupply: 1,
             models: 1,
             speed: '7"',
@@ -1039,7 +1403,195 @@
               { name: "Blink (1 PE)", phase: "Movement Phase", desc: "Instantly teleport up to 6\" ignoring terrain and models." }
             ],
             upgrades: [
-              { id: "stalker_pair", name: "Reinforce to 2 Stalkers (+100 M, +1 Sup)", cost: 100, supplyBonus: 1, modelBonus: 1, weaponRoaBonus: 3 }
+              { id: "stalker_pair", name: "Reinforce to 2 Stalkers (+95 M, +1 Sup)", cost: 95, supplyBonus: 1, modelBonus: 1, weaponRoaBonus: 3 }
+            ]
+          },
+          {
+            id: "p_sentry",
+            name: "Sentry Drone",
+            slotType: "Support",
+            reqStructure: "p_cyber_core",
+            release: "wave1",
+            timelineLabel: "Wave 1",
+            type: "Support Drone",
+            baseCost: 120,
+            baseSupply: 1,
+            models: 1,
+            speed: '6"',
+            armour: "4+",
+            health: 3,
+            shields: 4,
+            tags: "Ground, Mechanical, Support, Psionic",
+            weapons: [
+              { name: "Disruption Beam", rng: '12"', hit: "4+", roa: 3, surge: "-", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Guardian Shield (1 PE)", phase: "Assault Phase", desc: "Friendly units within 6\" reduce ranged damage by 1." },
+              { name: "Force Field (1 PE)", phase: "Movement Phase", desc: "Deploy 2\" impassable terrain energy barrier." }
+            ],
+            upgrades: []
+          },
+
+          // Wave 2
+          {
+            id: "p_immortal",
+            name: "Immortal Heavy Walker",
+            slotType: "Heavy",
+            reqStructure: "p_robotics",
+            release: "wave2",
+            timelineLabel: "Wave 2 (Heavy)",
+            type: "Heavy Anchor",
+            baseCost: 240,
+            baseSupply: 2,
+            models: 1,
+            speed: '5"',
+            armour: "3+",
+            health: 6,
+            shields: 6,
+            tags: "Ground, Mechanical, Armoured, 100mm Base",
+            weapons: [
+              { name: "Twin Phase Disruptors", rng: '18"', hit: "3+", roa: 4, surge: "Armoured / Pierce (2)", dmg: 4 }
+            ],
+            abilities: [
+              { name: "Hardened Barrier", phase: "Assault / Fight Phase", desc: "Whenever suffering damage greater than 2, reduce damage to 2." }
+            ],
+            upgrades: [
+              { id: "barrier_boost", name: "Barrier Capacitors (+30 M)", cost: 30, desc: "+2 Shields and immediate barrier recovery." }
+            ]
+          },
+          {
+            id: "p_zeratul",
+            name: "Zeratul (Dark Prelate)",
+            slotType: "Hero",
+            isHero: true,
+            reqStructure: "p_nexus",
+            release: "wave2",
+            timelineLabel: "Wave 2 (Heroes)",
+            type: "Hero Assassin",
+            baseCost: 200,
+            baseSupply: 1,
+            models: 1,
+            speed: '7"',
+            armour: "4+",
+            health: 6,
+            shields: 4,
+            tags: "Ground, Biological, Hero, Psionic, Stealth",
+            weapons: [
+              { name: "Warp Blade of Shakuras", rng: 'Melee', hit: "2+", roa: 6, surge: "Pierce (3) / Crit (5+)", dmg: 4 }
+            ],
+            abilities: [
+              { name: "Permanent Cloak", phase: "Movement Phase", desc: "Cannot be targeted at range beyond 8\" unless revealed." },
+              { name: "Shadow Strike (1 PE)", phase: "Assault Phase", desc: "Teleport 6\" and make an immediate melee attack." },
+              { name: "Void Prison (2 PE)", phase: "Macro / Round Start", desc: "Target cannot act, move, or be targeted for 1 round." }
+            ],
+            upgrades: []
+          },
+
+          // Wave 3
+          {
+            id: "p_high_templar",
+            name: "High Templar / Tassadar",
+            slotType: "Support",
+            reqStructure: "p_twilight",
+            release: "wave3",
+            timelineLabel: "Wave 3 (Casters)",
+            type: "Psionic Caster",
+            baseCost: 210,
+            baseSupply: 2,
+            models: 2,
+            speed: '5"',
+            armour: "5+",
+            health: 3,
+            shields: 4,
+            tags: "Ground, Biological, Psionic, Caster",
+            weapons: [
+              { name: "Psi-Shock", rng: '10"', hit: "4+", roa: 2, surge: "-", dmg: 1 }
+            ],
+            abilities: [
+              { name: "Psionic Storm (2 PE)", phase: "Assault Phase", desc: "Place 3\" storm; all models inside suffer 3 mortal wounds." },
+              { name: "Feedback (1 PE)", phase: "Assault Phase", desc: "Drain enemy command resource and deal direct damage." }
+            ],
+            upgrades: [
+              { id: "amulet", name: "Khaydarin Amulet (+25 M)", cost: 25, desc: "+1 starting Psionic Energy." }
+            ]
+          },
+
+          // Wave 4
+          {
+            id: "p_scout",
+            name: "Protoss Scout / Void Ray",
+            slotType: "Air",
+            reqStructure: "p_robotics",
+            release: "wave4",
+            timelineLabel: "Wave 4 (Flyers)",
+            type: "Air Assault",
+            baseCost: 220,
+            baseSupply: 2,
+            models: 1,
+            speed: '8"',
+            armour: "4+",
+            health: 6,
+            shields: 4,
+            tags: "Flyer, Mechanical, Capital Beam",
+            weapons: [
+              { name: "Prismatic Core Beam", rng: '16"', hit: "3+", roa: 4, surge: "Armoured / Ramp-Up", dmg: 3 }
+            ],
+            abilities: [
+              { name: "Prismatic Alignment (1 PE)", phase: "Assault Phase", desc: "+2 Damage against Armoured targets." }
+            ],
+            upgrades: []
+          },
+
+          // Future Waves
+          {
+            id: "p_dark_templar",
+            name: "Dark Templar Cohort",
+            slotType: "Core",
+            reqStructure: "p_twilight",
+            release: "future",
+            timelineLabel: "Wave 5 (Brood War)",
+            type: "Stealth Melee",
+            baseCost: 190,
+            baseSupply: 1,
+            models: 2,
+            speed: '7"',
+            armour: "4+",
+            health: 3,
+            shields: 3,
+            tags: "Ground, Biological, Psionic, Stealth",
+            weapons: [
+              { name: "Warp Blades", rng: 'Melee', hit: "2+", roa: 6, surge: "Pierce (2)", dmg: 4 }
+            ],
+            abilities: [
+              { name: "Innate Cloaking", phase: "Movement Phase", desc: "Permanent stealth unless inside Detector vision." }
+            ],
+            upgrades: []
+          },
+          {
+            id: "p_colossus",
+            name: "Colossus Strider",
+            slotType: "Heavy",
+            reqStructure: "p_robotics",
+            release: "future",
+            timelineLabel: "Wave 6 (Titans)",
+            type: "Super-Heavy Strider",
+            baseCost: 340,
+            baseSupply: 3,
+            models: 1,
+            speed: '6"',
+            armour: "3+",
+            health: 10,
+            shields: 8,
+            tags: "Ground/Tall, Mechanical, Armoured, Massive, 160mm Base",
+            weapons: [
+              { name: "Thermal Lances", rng: '20"', hit: "3+", roa: 8, surge: "Line Sweep / Light", dmg: 3 }
+            ],
+            abilities: [
+              { name: "Cliff Walker", phase: "Movement Phase", desc: "Ignores elevation and moves over units freely." },
+              { name: "Thermal Sweep", phase: "Assault Phase", desc: "Draw a 4\" line; all models caught in sweep suffer attacks." }
+            ],
+            upgrades: [
+              { id: "ext_thermal", name: "Extended Lances (+40 M)", cost: 40, desc: "Range increased to 26\"." }
             ]
           }
         ],
@@ -1070,13 +1622,31 @@
             resVal: 2, 
             grantedSlots: { Mech: 1, Support: 1 },
             phase: "Pre-Game Mustering",
-            ability: "Unlocks Stalkers; provides +1 Mech & +1 Support slot." 
+            ability: "Unlocks Stalkers and Sentries; provides +1 Mech & +1 Support slot." 
+          },
+          { 
+            id: "p_robotics", 
+            name: "Robotics Facility", 
+            vespene: 55, 
+            resVal: 2, 
+            grantedSlots: { Heavy: 2, Air: 1 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks Immortals, Colossi, and Scouts; provides +2 Heavy and +1 Air slot." 
+          },
+          { 
+            id: "p_twilight", 
+            name: "Twilight Council", 
+            vespene: 50, 
+            resVal: 2, 
+            grantedSlots: { Support: 2, Core: 1 },
+            phase: "Pre-Game Mustering",
+            ability: "Unlocks High Templar and Dark Templar; provides +2 Support & +1 Core slot." 
           }
         ]
       }
     };
 
-    // Load Database with LocalStorage Cache
+    // Initialize Database with LocalStorage Cache
     let DB = JSON.parse(JSON.stringify(DEFAULT_DB));
     try {
       const cached = localStorage.getItem("sc_tmg_rules_db");
@@ -1568,7 +2138,10 @@
       const filtered = DB[currentFaction].units.filter(u => {
         if (filter === "all") return true;
         if (filter === "wave1") return u.release === "wave1";
-        if (filter === "2026") return u.release === "2026";
+        if (filter === "wave2") return u.release === "wave2";
+        if (filter === "wave3") return u.release === "wave3";
+        if (filter === "wave4") return u.release === "wave4";
+        if (filter === "future") return u.release === "future";
         return true;
       });
 
@@ -1577,7 +2150,9 @@
         const check = canAddUnit(unit);
 
         let badgeClass = "badge-wave1";
-        if (unit.release === "2026") badgeClass = "badge-2026";
+        if (unit.release === "wave2") badgeClass = "badge-wave2";
+        if (unit.release === "wave3" || unit.release === "wave4") badgeClass = "badge-wave3";
+        if (unit.release === "future") badgeClass = "badge-future";
 
         item.className = `catalog-item ${!check.allowed ? 'locked' : ''}`;
         item.innerHTML = `
