@@ -1,0 +1,637 @@
+{
+  "version": "1.1.0",
+  "updated_at": "2026-09-16",
+  "patch_notes": "Official Archon Studio StarCraft: TMG Errata & Living Rules Update: Synchronized unit base mineral costs, corrected Tactical Structure slot grants, and aligned abilities with official phase sequence.",
+  "db": {
+    "Terran": {
+      "resName": "CP",
+      "units": [
+        {
+          "id": "t_raynor",
+          "name": "Jim Raynor",
+          "slotType": "Hero",
+          "isHero": true,
+          "reqStructure": "t_cc",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Hero Commander",
+          "baseCost": 185,
+          "baseSupply": 2,
+          "models": 1,
+          "speed": "6\"",
+          "armour": "4+",
+          "health": 6,
+          "shields": 0,
+          "tags": "Ground, Biological, Hero, Commander",
+          "weapons": [
+            { "name": "Custom Gauss Rifle", "rng": "16\"", "hit": "3+", "roa": 5, "surge": "Pierce (1)", "dmg": 2 },
+            { "name": "Breaching Frag", "rng": "8\"", "hit": "4+", "roa": 3, "surge": "Blast (1)", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Inspiring Presence (Aura)", "phase": "Macro / Round Start", "desc": "Friendly units within 6\" reroll failed Morale tests and add +1 Hit roll." },
+            { "name": "Penetrator Round (1 CP)", "phase": "Assault Phase (Shooting)", "desc": "Line attack: Target up to 2 models in direct file up to 18\" for 3 flat damage." }
+          ],
+          "upgrades": [
+            { "id": "combat_stims", "name": "Combat Stims (+20 M)", "cost": 20, "desc": "+2\" Move speed.", "phase": "Movement Phase" },
+            { "id": "raider_grit", "name": "Raider's Resolve (+25 M)", "cost": 25, "desc": "Gain Feel No Pain (5+).", "phase": "Assault / Fight Phase" }
+          ]
+        },
+        {
+          "id": "t_marine",
+          "name": "Marine Squad",
+          "slotType": "Core",
+          "reqStructure": "t_cc",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Core Infantry",
+          "baseCost": 140,
+          "baseSupply": 1,
+          "models": 6,
+          "speed": "5\"",
+          "armour": "5+",
+          "health": 1,
+          "shields": 0,
+          "tags": "Ground, Biological, Light",
+          "weapons": [
+            { "name": "C-14 Gauss Rifle", "rng": "14\"", "hit": "4+", "roa": 6, "surge": "Light", "dmg": 1 }
+          ],
+          "abilities": [
+            { "name": "Stimpack (1 CP)", "phase": "Assault Phase (Activation)", "desc": "Take 3 non-lethal wounds. Add +2\" Move and convert 3 misses to hits." },
+            { "name": "Take Cover (Reaction)", "phase": "Assault Phase (Enemy Shooting)", "desc": "When targeted in terrain cover, improve Armour save by +1." }
+          ],
+          "upgrades": [
+            {
+              "id": "squad_12",
+              "name": "Full Squad (12 Marines) (+100 M, +1 Sup)",
+              "cost": 100,
+              "supplyBonus": 1,
+              "modelBonus": 6,
+              "weaponRoaBonus": 6,
+              "incompatibleWith": ["raynors_raiders"],
+              "desc": "Doubles squad size to 12 models and rate of fire to 12 attacks."
+            },
+            {
+              "id": "combat_shields",
+              "name": "Combat Shields (+30 M)",
+              "cost": 30,
+              "incompatibleWith": ["raynors_raiders"],
+              "desc": "Each model gains +1 Health threshold (Health becomes 2)."
+            },
+            {
+              "id": "spec_agg12",
+              "name": "Specialist: AGG-12 (+25 M)",
+              "cost": 25,
+              "incompatibleWith": ["raynors_raiders", "spec_rocket"],
+              "desc": "[Specialist] 1 model equips an AGG-12 Grenade Launcher (12\" RNG, RoA 2, Blast 1). Incompatible with Rocket Launcher."
+            },
+            {
+              "id": "spec_rocket",
+              "name": "Specialist: Rocket Launcher (+30 M)",
+              "cost": 30,
+              "incompatibleWith": ["raynors_raiders", "spec_agg12"],
+              "desc": "[Specialist] 1 model equips a Rocket Launcher (20\" RNG, RoA 2, Air/Pierce 1). Incompatible with AGG-12."
+            },
+            {
+              "id": "raynors_raiders",
+              "name": "Upgrade to Raynor's Raiders (+35 M)",
+              "cost": 35,
+              "incompatibleWith": ["combat_shields", "squad_12", "spec_agg12", "spec_rocket"],
+              "isRaiderUpgrade": true,
+              "desc": "Rebel Marine variant. Equips bayonets and frag grenades. Gains Slugthrower (Anti-Evade within 8\"), Raiders Roll! (-1 CP on stim upon entry), and Rapid Reinforcement. Barred from Shields, Heavy Weapons, or 12-man size."
+            }
+          ]
+        },
+        {
+          "id": "t_marauder",
+          "name": "Marauder Squad",
+          "slotType": "Heavy",
+          "reqStructure": "t_barracks_tech",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Heavy Infantry",
+          "baseCost": 145,
+          "baseSupply": 1,
+          "models": 2,
+          "speed": "5\"",
+          "armour": "4+",
+          "health": 3,
+          "shields": 0,
+          "tags": "Ground, Biological, Armoured",
+          "weapons": [
+            { "name": "Quad K12 Grenade Launcher", "rng": "12\"", "hit": "4+", "roa": 4, "surge": "Armoured", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Concussive Shells", "phase": "Assault Phase (Shooting)", "desc": "Targets hit suffer -2\" Speed on their next activation." },
+            { "name": "Stimpack (1 CP)", "phase": "Assault Phase (Activation)", "desc": "Take 2 wounds to gain +2\" Move and +2 Precision hits." }
+          ],
+          "upgrades": [
+            { "id": "reinforce_4", "name": "Reinforce to 4 Marauders (+125 M, +1 Sup)", "cost": 125, "supplyBonus": 1, "modelBonus": 2, "weaponRoaBonus": 4, "desc": "Increases squad to 4 models." },
+            { "id": "kinetic_foam", "name": "Kinetic Foam (+40 M)", "cost": 40, "desc": "Gain Tough (1) on the first armour save of each phase." }
+          ]
+        },
+        {
+          "id": "t_goliath",
+          "name": "Goliath Walker",
+          "slotType": "Mech",
+          "reqStructure": "t_factory",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Elite Mech",
+          "baseCost": 185,
+          "baseSupply": 2,
+          "models": 1,
+          "speed": "6\"",
+          "armour": "3+",
+          "health": 6,
+          "shields": 0,
+          "tags": "Ground, Mechanical, Armoured",
+          "weapons": [
+            { "name": "Twin Autocannons", "rng": "16\"", "hit": "4+", "roa": 4, "surge": "Light", "dmg": 2 },
+            { "name": "Hellfire AA Missiles", "rng": "24\"", "hit": "3+", "roa": 3, "surge": "Air", "dmg": 3 }
+          ],
+          "abilities": [
+            { "name": "Target Lock", "phase": "Assault Phase (Shooting)", "desc": "Reroll Hit results of 1 against selected target this phase." }
+          ],
+          "upgrades": [
+            { "id": "ares_targeting", "name": "Ares Targeting (+20 M)", "cost": 20, "desc": "+4\" Range on Hellfire Missiles." }
+          ]
+        },
+        {
+          "id": "t_medic",
+          "name": "Medic Team",
+          "slotType": "Support",
+          "reqStructure": "t_barracks_tech",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Support",
+          "baseCost": 105,
+          "baseSupply": 1,
+          "models: 3,
+          "speed": "5\"",
+          "armour": "5+",
+          "health": 2,
+          "shields": 0,
+          "tags": "Ground, Biological, Support",
+          "weapons": [
+            { "name": "Shock Taser", "rng": "Melee", "hit": "5+", "roa": 3, "surge": "-", "dmg": 1 }
+          ],
+          "abilities": [
+            { "name": "Restoration Beam", "phase": "Assault Phase (Support)", "desc": "Restore up to 3 HP to an adjacent biological unit." },
+            { "name": "Optical Flare", "phase": "Assault Phase (Support)", "desc": "Target enemy within 12\" loses line of sight beyond 6\"." }
+          ],
+          "upgrades": []
+        },
+        {
+          "id": "t_siege_tank",
+          "name": "Crucio Siege Tank",
+          "slotType": "Heavy",
+          "reqStructure": "t_factory",
+          "release": "2026",
+          "timelineLabel": "2026 Wave 2",
+          "type": "Artillery",
+          "baseCost": 255,
+          "baseSupply": 2,
+          "models": 1,
+          "speed": "5\"",
+          "armour": "3+",
+          "health": 8,
+          "shields": 0,
+          "tags": "Ground, Mechanical, Armoured, Vehicle, 150mm Base",
+          "weapons": [
+            { "name": "Twin 90mm Cannons (Tank Mode)", "rng": "16\"", "hit": "4+", "roa": 4, "surge": "Armoured", "dmg": 3 },
+            { "name": "120mm Shock Cannon (Siege Mode)", "rng": "36\"", "hit": "3+", "roa": 3, "surge": "Blast (2) / Heavy", "dmg": 5 }
+          ],
+          "abilities": [
+            { "name": "Siege Mode (Transform)", "phase": "Assault Phase (Action)", "desc": "Lock down into artillery mode: weapon increases to 36\" and Blast (2)." },
+            { "name": "Spotter Coordination", "phase": "Assault Phase (Shooting)", "desc": "Can fire indirectly at targets seen by any friendly unit." }
+          ],
+          "upgrades": [
+            { "id": "shaped_blast", "name": "Shaped Blast (+30 M)", "cost": 30, "desc": "Allies take 0 splash damage." }
+          ]
+        }
+      ],
+      "tactics": [
+        {
+          "id": "t_cc",
+          "name": "Command Center (Faction Base)",
+          "isBase": true,
+          "vespene": 0,
+          "resVal": 1,
+          "grantedSlots": { "Hero": 1, "Core": 2 },
+          "phase": "Macro / Round Start",
+          "ability": "Base Logistics: Always included. Tap each round for 1 Command Point."
+        },
+        {
+          "id": "t_barracks_std",
+          "name": "Barracks (Standard)",
+          "vespene": 30,
+          "resVal": 1,
+          "grantedSlots": { "Core": 2 },
+          "phase": "Pre-Game Mustering",
+          "ability": "Muster Grunts: Grants +2 Core slots; reduce first reinforced squad cost by 20 minerals."
+        },
+        {
+          "id": "t_barracks_tech",
+          "name": "Barracks (Tech Lab)",
+          "vespene": 40,
+          "resVal": 1,
+          "grantedSlots": { "Heavy": 1, "Support": 1 },
+          "phase": "Assault Phase",
+          "ability": "Tech Infusion: Unlocks Marauders and Medics; +1 Heavy & +1 Support slot."
+        },
+        {
+          "id": "t_factory",
+          "name": "Factory Armory",
+          "vespene": 50,
+          "resVal": 2,
+          "grantedSlots": { "Mech": 1, "Heavy": 1 },
+          "phase": "Movement Phase",
+          "ability": "Overclock Engines: Mech units gain +3\" Speed during their move activation."
+        },
+        {
+          "id": "t_orbital",
+          "name": "Orbital Command Station",
+          "vespene": 60,
+          "resVal": 2,
+          "grantedSlots": { "Hero": 1, "Support": 1 },
+          "phase": "Macro / Round Start",
+          "ability": "Scanner Sweep: Reveal all Burrowed/Stealth units across the board for the round."
+        }
+      ]
+    },
+    "Zerg": {
+      "resName": "BM",
+      "units": [
+        {
+          "id": "z_kerrigan",
+          "name": "Sarah Kerrigan",
+          "slotType": "Hero",
+          "isHero": true,
+          "reqStructure": "z_hatchery",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Hero Commander",
+          "baseCost": 215,
+          "baseSupply": 2,
+          "models": 1,
+          "speed": "8\"",
+          "armour": "4+",
+          "health": 7,
+          "shields": 0,
+          "tags": "Ground, Biological, Psionic, Hero, Commander",
+          "weapons": [
+            { "name": "Primal Bone Claws", "rng": "Melee", "hit": "2+", "roa": 6, "surge": "Pierce (2)", "dmg": 3 },
+            { "name": "Psionic Shift", "rng": "10\"", "hit": "3+", "roa": 4, "surge": "Blast (1)", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Leaping Strike", "phase": "Assault Phase (Charge)", "desc": "Leap directly into close combat from up to 8\" away without terrain penalty." },
+            { "name": "Spawn Broodlings", "phase": "Fight Phase", "desc": "Place a free Zergling model within 2\" whenever Kerrigan destroys an enemy model." }
+          ],
+          "upgrades": [
+            { "id": "kinetic_blast", "name": "Kinetic Blast (+30 M)", "cost": 30, "desc": "+2 Damage vs Armoured with Psionic Shift." }
+          ]
+        },
+        {
+          "id": "z_zergling",
+          "name": "Zergling Brood",
+          "slotType": "Core",
+          "reqStructure": "z_spawning_pool",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Core Swarm",
+          "baseCost": 160,
+          "baseSupply": 1,
+          "models": 12,
+          "speed": "8\"",
+          "armour": "6+",
+          "health": 1,
+          "shields": 0,
+          "tags": "Ground, Biological, Light",
+          "weapons": [
+            { "name": "Serrated Claws", "rng": "Melee", "hit": "4+", "roa": 12, "surge": "Light", "dmg": 1 }
+          ],
+          "abilities": [
+            { "name": "Metabolic Surge (1 BM)", "phase": "Assault Phase (Charge)", "desc": "Roll 2D6 pick highest for charge distance." },
+            { "name": "Swarm Overwhelm", "phase": "Fight Phase", "desc": "+1 RoA per model if the brood outnumbers the enemy." }
+          ],
+          "upgrades": [
+            {
+              "id": "squad_24_zerg",
+              "name": "Full Swarm (24 Zerglings) (+110 M, +1 Sup)",
+              "cost": 110,
+              "supplyBonus": 1,
+              "modelBonus": 12,
+              "weaponRoaBonus": 12,
+              "desc": "Expands brood to 24 models and 24 melee attacks."
+            },
+            {
+              "id": "raptor_strain",
+              "name": "Strain: Raptor Brood (+40 M)",
+              "cost": 40,
+              "incompatibleWith": ["shredding_claws"],
+              "desc": "[Strain] Gains Cliff Jumper (ignores terrain elevation) and Impact (1) on 5+ charges. Incompatible with Shredding Claws."
+            },
+            {
+              "id": "shredding_claws",
+              "name": "Carapace: Shredding Claws (+25 M)",
+              "cost": 25,
+              "incompatibleWith": ["raptor_strain"],
+              "desc": "[Strain] Claws gain Pierce (1) against Armoured. Incompatible with Raptor Brood."
+            },
+            {
+              "id": "burrow",
+              "name": "Burrow (+20 M)",
+              "cost": 20,
+              "desc": "Can Burrow to gain Stealth and Evade (4+)."
+            }
+          ]
+        },
+        {
+          "id": "z_roach",
+          "name": "Roach Pack",
+          "slotType": "Heavy",
+          "reqStructure": "z_roach_warren",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Assault Beast",
+          "baseCost": 165,
+          "baseSupply": 1,
+          "models": 3,
+          "speed": "5\"",
+          "armour": "4+",
+          "health": 3,
+          "shields": 0,
+          "tags": "Ground, Biological, Armoured",
+          "weapons": [
+            { "name": "Acid Saliva", "rng": "10\"", "hit": "4+", "roa": 6, "surge": "Armoured", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Rapid Regeneration", "phase": "Round Start / End Phase", "desc": "Heal 2 damage each activation if Burrowed or on Creep." },
+            { "name": "Burrow Ambush", "phase": "Movement Phase (Reserves)", "desc": "Deploy anywhere on the table outside 10\" of enemies." }
+          ],
+          "upgrades": [
+            { "id": "roach_6", "name": "Double Pack (6 Roaches) (+135 M, +1 Sup)", "cost": 135, "supplyBonus": 1, "modelBonus": 3, "weaponRoaBonus": 6, "desc": "Increases pack to 6 models." },
+            {
+              "id": "corpser_strain",
+              "name": "Strain: Corpser Strains (+35 M)",
+              "cost": 35,
+              "incompatibleWith": ["hydriodic_bile"],
+              "desc": "Destroyed targets spawn 2 allied Roachlings. Incompatible with Hydriodic Bile."
+            },
+            {
+              "id": "hydriodic_bile",
+              "name": "Offensive: Hydriodic Bile (+30 M)",
+              "cost": 30,
+              "incompatibleWith": ["corpser_strain"],
+              "desc": "Acid Saliva gains Light Surge and D3+1 damage. Incompatible with Corpser Strain."
+            },
+            { "id": "tunneling", "name": "Tunneling Claws (+35 M)", "cost": 35, "desc": "Move full speed while Burrowed." }
+          ]
+        },
+        {
+          "id": "z_hydra",
+          "name": "Hydralisk Den-Guard",
+          "slotType": "Core",
+          "reqStructure": "z_hydra_den",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Ranged Hunter",
+          "baseCost": 135,
+          "baseSupply": 1,
+          "models": 2,
+          "speed": "6\"",
+          "armour": "5+",
+          "health": 3,
+          "shields": 0,
+          "tags": "Ground, Biological",
+          "weapons": [
+            { "name": "Needle Spines", "rng": "16\"", "hit": "3+", "roa": 6, "surge": "Light / Air", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Grooved Spines", "phase": "Assault Phase (Shooting)", "desc": "Ignores target cover bonuses at ranges under 10\"." }
+          ],
+          "upgrades": [
+            { "id": "reinforce_hydra_4", "name": "Reinforce to 4 Hydras (+115 M, +1 Sup)", "cost": 115, "supplyBonus": 1, "modelBonus": 2, "weaponRoaBonus": 6, "desc": "Reinforce unit to 4 models." }
+          ]
+        }
+      ],
+      "tactics": [
+        {
+          "id": "z_hatchery",
+          "name": "Hatchery (Faction Hive)",
+          "isBase": true,
+          "vespene": 0,
+          "resVal": 1,
+          "grantedSlots": { "Hero": 1, "Core": 1 },
+          "phase": "Macro / Round Start",
+          "ability": "Spawn Larvae: Always included. Tap each round for 1 Biomass or produce a free deployment token."
+        },
+        {
+          "id": "z_spawning_pool",
+          "name": "Spawning Pool",
+          "vespene": 30,
+          "resVal": 1,
+          "grantedSlots": { "Core": 3 },
+          "phase": "Pre-Game Mustering",
+          "ability": "Unlocks Zergling Broods; provides +3 Core Swarm slots."
+        },
+        {
+          "id": "z_roach_warren",
+          "name": "Roach Warren",
+          "vespene": 35,
+          "resVal": 1,
+          "grantedSlots": { "Heavy": 2 },
+          "phase": "Pre-Game Mustering",
+          "ability": "Unlocks Roaches; provides +2 Heavy slots."
+        },
+        {
+          "id": "z_hydra_den",
+          "name": "Hydralisk Den",
+          "vespene": 45,
+          "resVal": 1,
+          "grantedSlots": { "Core": 2, "Support": 1 },
+          "phase": "Assault Phase (Shooting)",
+          "ability": "Unlocks Hydralisks; provides +2 Core and +1 Support slot. Hydras gain +2\" range on Creep."
+        }
+      ]
+    },
+    "Protoss": {
+      "resName": "PE",
+      "units": [
+        {
+          "id": "p_artanis",
+          "name": "Hierarch Artanis",
+          "slotType": "Hero",
+          "isHero": true,
+          "reqStructure": "p_nexus",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Hero Commander",
+          "baseCost": 225,
+          "baseSupply": 2,
+          "models": 1,
+          "speed": "6\"",
+          "armour": "3+",
+          "health": 6,
+          "shields": 6,
+          "tags": "Ground, Biological, Psionic, Hero, Commander",
+          "weapons": [
+            { "name": "Twin Psi-Blades", "rng": "Melee", "hit": "2+", "roa": 7, "surge": "Pierce (2)", "dmg": 3 },
+            { "name": "Lightning Dash", "rng": "8\"", "hit": "3+", "roa": 4, "surge": "Light", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Shield Overcharge", "phase": "Macro / Round Start", "desc": "Friendly Protoss within 8\" immediately restore 2 Shields." },
+            { "name": "Guardian Shell", "phase": "Any Phase (Reaction)", "desc": "First friendly model to take fatal damage survives with 1 HP." }
+          ],
+          "upgrades": [
+            { "id": "solarite", "name": "Solarite Core (+30 M)", "cost": 30, "desc": "+2 Shields." }
+          ]
+        },
+        {
+          "id": "p_zealot",
+          "name": "Zealot Phalanx",
+          "slotType": "Core",
+          "reqStructure": "p_gateway",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Core Melee",
+          "baseCost": 150,
+          "baseSupply": 2,
+          "models": 3,
+          "speed": "6\"",
+          "armour": "4+",
+          "health": 3,
+          "shields": 3,
+          "tags": "Ground, Biological, Psionic",
+          "weapons": [
+            { "name": "Psi-Blades", "rng": "Melee", "hit": "3+", "roa": 8, "surge": "Light", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Zealous Charge (1 PE)", "phase": "Assault Phase (Charge)", "desc": "Add flat +3\" to charge movement without rolling dice." },
+            { "name": "Plasma Shield", "phase": "Assault / Fight Phase", "desc": "Damage must exhaust shields prior to rolling armour saves." }
+          ],
+          "upgrades": [
+            {
+              "id": "zealot_6",
+              "name": "Full Phalanx (6 Zealots) (+130 M, +1 Sup)",
+              "cost": 130,
+              "supplyBonus": 1,
+              "modelBonus": 3,
+              "weaponRoaBonus": 8,
+              "desc": "Expands squad to 6 models."
+            },
+            {
+              "id": "praetor_guard",
+              "name": "Upgrade to Praetor Guard (+35 M)",
+              "cost": 35,
+              "incompatibleWith": ["shield_capacitor"],
+              "desc": "Veterans gain Pierce (1) on Psi-Blades and +2 attacks. Incompatible with Shield Capacitors."
+            },
+            {
+              "id": "shield_capacitor",
+              "name": "Shield Capacitors (+30 M)",
+              "cost": 30,
+              "incompatibleWith": ["praetor_guard"],
+              "desc": "Adds +2 Shields to the unit. Incompatible with Praetor Guard."
+            }
+          ]
+        },
+        {
+          "id": "p_adept",
+          "name": "Adept Cadre",
+          "slotType": "Core",
+          "reqStructure": "p_gateway",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Ranged Infantry",
+          "baseCost": 145,
+          "baseSupply": 1,
+          "models": 4,
+          "speed": "6\"",
+          "armour": "4+",
+          "health": 3,
+          "shields": 2,
+          "tags": "Ground, Biological, Light, Psionic",
+          "weapons": [
+            { "name": "Glaive Cannon", "rng": "14\"", "hit": "4+", "roa": 6, "surge": "Light", "dmg": 2 }
+          ],
+          "abilities": [
+            { "name": "Psionic Transfer (1 PE)", "phase": "Movement Phase", "desc": "Send shade; Adept squad teleports to shade location at end of phase." }
+          ],
+          "upgrades": [
+            {
+              "id": "resonating",
+              "name": "Resonating Glaives (+35 M)",
+              "cost": 35,
+              "incompatibleWith": ["phase_bulwark"],
+              "desc": "Hits on 3+ against Light targets. Incompatible with Phase Bulwark."
+            },
+            {
+              "id": "phase_bulwark",
+              "name": "Phase Bulwark (+30 M)",
+              "cost": 30,
+              "incompatibleWith": ["resonating"],
+              "desc": "Gain +2 Shields while projecting a shade. Incompatible with Resonating Glaives."
+            }
+          ]
+        },
+        {
+          "id": "p_stalker",
+          "name": "Stalker Stryker",
+          "slotType": "Mech",
+          "reqStructure": "p_cyber_core",
+          "release": "wave1",
+          "timelineLabel": "Wave 1",
+          "type": "Cybernetic Walker",
+          "baseCost": 165,
+          "baseSupply": 1,
+          "models": 1,
+          "speed": "7\"",
+          "armour": "3+",
+          "health": 5,
+          "shields": 3,
+          "tags": "Ground, Mechanical, Armoured, Psionic",
+          "weapons": [
+            { "name": "Particle Disruptor", "rng": "18\"", "hit": "3+", "roa": 3, "surge": "Armoured / Air", "dmg": 3 }
+          ],
+          "abilities": [
+            { "name": "Blink (1 PE)", "phase": "Movement Phase", "desc": "Instantly teleport up to 6\" ignoring terrain and models." }
+          ],
+          "upgrades": [
+            { "id": "stalker_pair", "name": "Reinforce to 2 Stalkers (+95 M, +1 Sup)", "cost": 95, "supplyBonus": 1, "modelBonus": 1, "weaponRoaBonus": 3 }
+          ]
+        }
+      ],
+      "tactics": [
+        {
+          "id": "p_nexus",
+          "name": "Nexus (Faction Core)",
+          "isBase": true,
+          "vespene": 0,
+          "resVal": 1,
+          "grantedSlots": { "Hero": 1, "Core": 1 },
+          "phase": "Macro / Round Start",
+          "ability": "Always included. Tap each round for 1 Psionic Energy or recharge 2 shields on a nearby ally."
+        },
+        {
+          "id": "p_gateway",
+          "name": "Gateway (Standard)",
+          "vespene": 30,
+          "resVal": 1,
+          "grantedSlots": { "Core": 2 },
+          "phase": "Pre-Game Mustering",
+          "ability": "Unlocks Zealots and Adepts; provides +2 Core slots."
+        },
+        {
+          "id": "p_cyber_core",
+          "name": "Cybernetics Core",
+          "vespene": 45,
+          "resVal": 2,
+          "grantedSlots": { "Mech": 1, "Support": 1 },
+          "phase": "Pre-Game Mustering",
+          "ability": "Unlocks Stalkers; provides +1 Mech & +1 Support slot."
+        }
+      ]
+    }
+  }
+}
